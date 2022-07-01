@@ -10,18 +10,22 @@ trait Filterable
         return self::class;
     }
 
-    public static function filterList($load_operators = false){
+    protected static function getFilterResponseFields(){
+        return ['id','type','caption','operators'];
+    }
+
+    public static function filterList($load_operators = true){
         $filters = Filter::where('model', self::getFilterModel())->get();
         if ($load_operators){
             $filters->transform(function ($filter){
                 $filter->operators = config('filters.operators.'.$filter['type']);
-                return $filter;
+                return $filter->only(self::getFilterResponseFields());
             });
         }
         return $filters;
     }
 
-    public function addFilter($filter){
+    public static function addFilter($filter){
         $filter['model'] = self::getFilterModel();
         if (!isset($filter['field'])){
             $filter['field'] = 'id';
@@ -35,7 +39,7 @@ trait Filterable
         return Filter::firstOrCreate($filter);
     }
 
-    public function addFilters($filters){
+    public static function addFilters($filters){
         foreach ($filters as $filter){
             self::addFilter($filter);
         }
