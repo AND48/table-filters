@@ -1,0 +1,38 @@
+{
+    "name": "and48/table-filters",
+    "description": "Making Eloquent models filterable.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andrii Strilchuk",
+            "email": "cater_pill@yahoo.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "AND48\\TableFilters\\": "src",
+            "AND48\\TableFilters\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AND48\\TableFilters\\Tests\\": "tests"
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.5"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-f": "vendor/bin/phpunit --filter"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AND48\\TableFilters\\TableFiltersServiceProvider"
+            ]
+        }
+    }
+}
