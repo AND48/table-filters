@@ -67,12 +67,22 @@ trait Filterable
 
     /**
      *
+     * get static keyName for source data
+     *
+     * @return string
+     */
+    public static function getFilterSourceKeyName(){
+        return (new static())->getKeyName();
+    }
+
+    /**
+     *
      * get sorting field for source data
      *
      * @return string
      */
     public static function getFilterSourceOrderBy(){
-        return (new static())->getKeyName();
+        return self::getFilterSourceKeyName();
     }
 
     /**
@@ -102,6 +112,6 @@ trait Filterable
      * @return Collection
      */
     public static function getFilterSourceTransform($item){
-        return $item->only([self::getKeyName(), self::getFilterSourceField()]);
+        return $item->only([self::getFilterSourceKeyName(), self::getFilterSourceField()]);
     }
 }
