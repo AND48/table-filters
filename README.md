@@ -1,4 +1,4 @@
-# Column sorting for Laravel 8
+# Table filters for Laravel 8
 
 Package for  making Eloquent models filterable.
 
