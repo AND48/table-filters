@@ -31,27 +31,33 @@ class Filter extends Model
         return \AND48\TableFilters\Database\Factories\FilterFactory::new();
     }
 
-    public function sourceData($page = 1, $search_query = null){
+    public function sourceData(int $page = 1, string $search_query = null){
         if ($this->type !== self::TYPE_SOURCE || !$this->source_model || !class_exists($this->source_model)){
             return collect();
         }
 
         $model = app($this->source_model);
-        $source_field = $model->getFilterSourceField();
+        $source_field = $model::getFilterSourceField();
+        $per_page = $model::getFilterSourcePerPage();
+        $order_by = $model::getFilterSourceOrderBy();
+        $load = $model::getFilterSourceLoad();
+
         $query = $model->query();
 
         if ($search_query) {
             $query = $query->where($source_field, 'LIKE', "%$search_query%");
         }
+        if (!empty($load)) {
+            $query = $query->with($load);
+        }
 
-        $per_page = $model->getFilterSourcePerPage();
         $offset = ($page - 1) * $per_page;
-        $order_by = $model->getFilterSourceOrderBy();
-        $query = $query->select($model->getKeyName(), $source_field)
-            ->skip($offset)
+        $query = $query->skip($offset)
             ->take($per_page)
             ->orderBy($order_by);
 
-        return $query->get();
+        return $query->get()->transform(function($item) use ($model){
+            return $model::getFilterSourceTransform($item);
+        });
     }
 }

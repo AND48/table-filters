@@ -4,6 +4,7 @@ namespace AND48\TableFilters\Traits;
 
 use AND48\TableFilters\Models\Filter;
 use http\Env\Url;
+use Illuminate\Support\Collection;
 
 /**
  * Trait Filterable
@@ -60,7 +61,7 @@ trait Filterable
      *
      * @return string
      */
-    public function getFilterSourceField(){
+    public static function getFilterSourceField(){
         return 'name';
     }
 
@@ -70,17 +71,37 @@ trait Filterable
      *
      * @return string
      */
-    public function getFilterSourceOrderBy(){
-        return $this->getKeyName();
+    public static function getFilterSourceOrderBy(){
+        return (new static())->getKeyName();
     }
 
     /**
      *
      * get field count per page for source data
      *
-     * @return string
+     * @return int
      */
-    public function getFilterSourcePerPage(){
+    public static function getFilterSourcePerPage(){
         return 10;
+    }
+
+    /**
+     *
+     * get lazy load array for source data
+     *
+     * @return array
+     */
+    public static function getFilterSourceLoad(){
+        return [];
+    }
+
+    /**
+     *
+     * get transform method for source data
+     *
+     * @return Collection
+     */
+    public static function getFilterSourceTransform($item){
+        return $item->only([self::getKeyName(), self::getFilterSourceField()]);
     }
 }

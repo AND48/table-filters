@@ -54,5 +54,49 @@ class GetSourceDataTest extends TestCase
         $this->assertArrayHasKey(User::getFilterSourceField(), Arr::first($response));
     }
 
+    /** @test */
+    function check_source_transform()
+    {
+        $count = 1;
+
+        $filter = User::addFilter([
+            'field' =>'parent_id',
+            'type' => Filter::TYPE_SOURCE,
+            'caption' => 'Parent user',
+            'source_model' => User::class
+        ]);
+        User::factory()->count($count)->create();
+        $response = $filter->sourceData();
+        $this->assertArrayHasKey('parent_user_name', Arr::first($response));
+    }
+
+    /** @test */
+    function check_source_lazy_load()
+    {
+        $count = 5;
+
+        $filter = User::addFilter([
+            'field' =>'parent_id',
+            'type' => Filter::TYPE_SOURCE,
+            'caption' => 'Parent user',
+            'source_model' => User::class
+        ]);
+        User::factory()->count($count)->create();
+        $users = User::all();
+//        dd(User::all());
+        foreach ($users as $user){
+            $user->parent_id = rand(1, count($users));
+            $user->save();
+        }
+//        dd(User::all());
+
+        $counter = 0;
+        \DB::listen(function($sql) use (&$counter){
+            $counter ++;
+        });
+        $filter->sourceData();
+        $this->assertEquals(2, $counter);
+    }
+
 }
 
