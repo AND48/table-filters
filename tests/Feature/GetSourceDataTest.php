@@ -25,7 +25,7 @@ class GetSourceDataTest extends TestCase
         ]);
         User::factory()->count($count)->create();
 
-        $response = $this->get(route('filters.source_data', ['filter' => 1, 'page' => 2]))->original;
+        $response = $this->get(route('filters.source_data', ['filter_id' => 1, 'page' => 2]))->original;
 
         $this->assertCount($count - User::getFilterSourcePerPage(), $response);
         $this->assertArrayHasKey('id', Arr::first($response));
@@ -47,7 +47,7 @@ class GetSourceDataTest extends TestCase
         User::factory()->create(['name' => 'Mike']);
         User::factory()->create(['name' => 'Sandy']);
 
-        $response = $this->get(route('filters.source_data', ['filter' => 1, 'query' => 'and']))->original;
+        $response = $this->get(route('filters.source_data', ['filter_id' => 1, 'query' => 'and']))->original;
 
         $this->assertCount(3, $response);
         $this->assertArrayHasKey('id', Arr::first($response));

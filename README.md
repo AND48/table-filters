@@ -61,3 +61,14 @@ Get your filters.
 $filters = User::filterList(true, [
                 'status' => ['new','confirmed', 'verified', 'active', 'suspended']]
 ```
+
+Get source data.
+```php
+$filter = Filter::find($filter_id);
+$sorce_data = $filter->sourceData($page, $search_query);
+```
+
+Load source data by route.
+```php
+route('filters.source_data', ['filter_id' => 1, 'query' => '*', 'page' => 2]);
+```

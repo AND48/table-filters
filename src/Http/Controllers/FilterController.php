@@ -9,7 +9,7 @@ class FilterController extends Controller
     public function sourceData()
     {
         //
-        $filter = Filter::findOrFail(request('filter'));
+        $filter = Filter::findOrFail(request('filter_id'));
 
         return response()->json($filter->sourceData(
             request()->input('page', 1), request()->input('query')));
