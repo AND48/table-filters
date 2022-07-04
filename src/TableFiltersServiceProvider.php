@@ -3,6 +3,7 @@
 namespace AND48\TableFilters;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class TableFiltersServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,23 @@ class TableFiltersServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../config/config.php' => config_path('filters.php'),
             ], 'config');
+
+            $this->registerRoutes();
         }
+    }
+
+    protected function registerRoutes()
+    {
+        Route::group($this->routeConfiguration(), function () {
+            $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+        });
+    }
+
+    protected function routeConfiguration()
+    {
+        return [
+            'prefix' => config('filters.prefix'),
+            'middleware' => config('filters.middleware'),
+        ];
     }
 }

@@ -20,6 +20,7 @@ class CreateFiltersTable extends Migration
             $table->string('field');
             $table->enum('type', Filter::TYPES);
             $table->string('caption');
+            $table->string('source_model')->nullable();
             $table->timestamps();
         });
     }

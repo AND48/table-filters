@@ -5,6 +5,10 @@ namespace AND48\TableFilters\Traits;
 use AND48\TableFilters\Models\Filter;
 use http\Env\Url;
 
+/**
+ * Trait Filterable
+ * @package AND48\TableFilters\Traits
+ */
 trait Filterable
 {
     protected static function getFilterModel(){
@@ -48,5 +52,35 @@ trait Filterable
         foreach ($filters as $filter){
             self::addFilter($filter);
         }
+    }
+
+    /**
+     *
+     * get field name for source data
+     *
+     * @return string
+     */
+    public function getFilterSourceField(){
+        return 'name';
+    }
+
+    /**
+     *
+     * get sorting field for source data
+     *
+     * @return string
+     */
+    public function getFilterSourceOrderBy(){
+        return $this->getKeyName();
+    }
+
+    /**
+     *
+     * get field count per page for source data
+     *
+     * @return string
+     */
+    public function getFilterSourcePerPage(){
+        return 10;
     }
 }

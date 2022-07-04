@@ -21,7 +21,7 @@ class UserFactory extends TestbenchUserFactory
             'is_blocked' => $this->faker->boolean,
             'balance' => $this->faker->randomFloat(),
             'status' => User::STATUSES[rand(0,count(User::STATUSES)-1)],
-            'parent_id' => User::inRandomOrder()->first()->id,
+            'parent_id' => User::inRandomOrder()->first()->id ?? null,
         ];
     }
 }

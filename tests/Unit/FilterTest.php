@@ -19,7 +19,7 @@ class FilterTest extends TestCase
             'field' => 'name',
             'type' => Filter::TYPE_STRING,
             'caption' => 'Name',
-//            'related_model' => null,
+            'related_model' => 'App/Order',
         ]);
         $this->assertModelExists($filter);
     }
@@ -34,7 +34,7 @@ class FilterTest extends TestCase
             ['field' =>'is_blocked', 'type' => Filter::TYPE_BOOLEAN, 'caption' => 'Is blocked'],
             ['field' =>'balance', 'type' => Filter::TYPE_NUMBER, 'caption' => 'Balance'],
             ['field' =>'status', 'type' => Filter::TYPE_ENUM, 'caption' => 'Status'],
-            ['field' =>'parent_id', 'type' => Filter::TYPE_SOURCE, 'caption' => 'Parent user'],
+            ['field' =>'parent_id', 'type' => Filter::TYPE_SOURCE, 'caption' => 'Parent user', 'source_model' => User::class],
         ]);
 //        dump(User::filterList(true));
         $this->assertCount(7, User::filterList(true));
