@@ -4,6 +4,7 @@ namespace AND48\TableFilters\Traits;
 
 use AND48\TableFilters\Models\Filter;
 use http\Env\Url;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /**
@@ -61,7 +62,7 @@ trait Filterable
      *
      * @return string
      */
-    public static function getFilterSourceField(){
+    public static function getFilterSourceField() :string{
         return 'name';
     }
 
@@ -71,7 +72,7 @@ trait Filterable
      *
      * @return string
      */
-    public static function getFilterSourceKeyName(){
+    public static function getFilterSourceKeyName() :string{
         return (new static())->getKeyName();
     }
 
@@ -81,7 +82,7 @@ trait Filterable
      *
      * @return string
      */
-    public static function getFilterSourceOrderBy(){
+    public static function getFilterSourceOrderBy():string{
         return self::getFilterSourceKeyName();
     }
 
@@ -91,7 +92,7 @@ trait Filterable
      *
      * @return int
      */
-    public static function getFilterSourcePerPage(){
+    public static function getFilterSourcePerPage() :int{
         return 10;
     }
 
@@ -101,7 +102,7 @@ trait Filterable
      *
      * @return array
      */
-    public static function getFilterSourceLoad(){
+    public static function getFilterSourceLoad() :array{
         return [];
     }
 
@@ -109,9 +110,20 @@ trait Filterable
      *
      * get transform method for source data
      *
-     * @return Collection
+     * @return array
      */
-    public static function getFilterSourceTransform($item){
+    public static function getFilterSourceTransform($item) :array{
         return $item->only([self::getFilterSourceKeyName(), self::getFilterSourceField()]);
+    }
+
+    /**
+     *
+     * get scope for source data
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterSource($query) :Builder{
+        return $query;
     }
 }

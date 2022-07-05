@@ -52,12 +52,13 @@ class Filter extends Model
         }
 
         $offset = ($page - 1) * $per_page;
-        $query = $query->skip($offset)
+        return $query->filterSource()
+            ->skip($offset)
             ->take($per_page)
-            ->orderBy($order_by);
-
-        return $query->get()->transform(function($item) use ($model){
-            return $model::getFilterSourceTransform($item);
-        });
+            ->orderBy($order_by)
+            ->get()
+            ->transform(function($item) use ($model){
+                return $model::getFilterSourceTransform($item);
+            });
     }
 }

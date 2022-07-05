@@ -98,5 +98,21 @@ class GetSourceDataTest extends TestCase
         $this->assertEquals(2, $counter);
     }
 
+    /** @test */
+    function check_source_scope()
+    {
+        $filter = User::addFilter([
+            'field' =>'parent_id',
+            'type' => Filter::TYPE_SOURCE,
+            'caption' => 'Parent user',
+            'source_model' => User::class
+        ]);
+        User::factory()->create(['is_blocked' => true]);
+        User::factory()->create(['is_blocked' => false]);
+
+        $users = $filter->sourceData();
+        $this->assertFalse((boolean)User::find(Arr::first($users)['id'])->is_blocked);
+    }
+
 }
 

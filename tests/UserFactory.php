@@ -18,7 +18,7 @@ class UserFactory extends TestbenchUserFactory
         return [
             'name' => $this->faker->name,
             'birthday' => $this->faker->dateTime,
-            'is_blocked' => $this->faker->boolean,
+            'is_blocked' => false,
             'balance' => $this->faker->randomFloat(),
             'status' => User::STATUSES[rand(0,count(User::STATUSES)-1)],
             'parent_id' => null,

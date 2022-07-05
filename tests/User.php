@@ -28,7 +28,12 @@ class User extends Model
         $item->parent_user_name = $item->parent->name ?? '';
         return $item->only(['id', 'name', 'parent_user_name']);
     }
+
     public static function getFilterSourceLoad(){
         return ['parent'];
+    }
+
+    public function scopeFilterSource($query){
+        return $query->where('is_blocked', false);
     }
 }
