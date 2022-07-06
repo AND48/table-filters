@@ -2,6 +2,7 @@
 
 namespace AND48\TableFilters\Tests\Feature;
 
+use AND48\TableFilters\Exceptions\TableFiltersException;
 use AND48\TableFilters\Models\Filter;
 use AND48\TableFilters\Tests\TestCase;
 use AND48\TableFilters\Tests\User;
@@ -113,6 +114,37 @@ class GetSourceDataTest extends TestCase
         $users = $filter->sourceData();
         $this->assertFalse((boolean)User::find(Arr::first($users)['id'])->is_blocked);
     }
+
+//    /** @test */
+//    function check_source_exceptions()
+//    {
+//        try {
+//            $filter = User::addFilter([
+//                'field' =>'parent_id',
+//                'type' => Filter::TYPE_STRING,
+//                'caption' => 'Parent user',
+//                'source_model' => User::class
+//            ]);
+//
+//            $filter->sourceData();
+//        } catch (TableFiltersException $exception){
+//            $this->assertEquals(200, $exception->getCode());
+//        }
+//
+//        try {
+//            $filter = User::addFilter([
+//                'field' =>'parent_id',
+//                'type' => Filter::TYPE_SOURCE,
+//                'caption' => 'Parent user',
+//                'source_model' => 'Unknown/Model'
+//            ]);
+//
+//            $filter->sourceData();
+//        } catch (TableFiltersException $exception){
+//            $this->assertEquals(201, $exception->getCode());
+//        }
+//
+//    }
 
 }
 

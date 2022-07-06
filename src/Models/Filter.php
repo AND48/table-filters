@@ -2,6 +2,8 @@
 
 namespace AND48\TableFilters\Models;
 
+use AND48\TableFilters\Exceptions\TableFiltersException;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,8 +34,11 @@ class Filter extends Model
     }
 
     public function sourceData(int $page = 1, string $search_query = null){
-        if ($this->type !== self::TYPE_SOURCE || !$this->source_model || !class_exists($this->source_model)){
-            return collect();
+        if ($this->type !== self::TYPE_SOURCE){
+            throw new TableFiltersException('The type must be a "'.self::TYPE_SOURCE.'", "'.$this->type.'" given.', 200);
+        }
+        if (!$this->source_model || !class_exists($this->source_model)){
+            throw new TableFiltersException('Class "'.$this->source_model.'" not exists.', 201);
         }
 
         $model = app($this->source_model);
@@ -60,5 +65,22 @@ class Filter extends Model
             ->transform(function($item) use ($model){
                 return $model::getFilterSourceTransform($item);
             });
+    }
+
+    private static function numberval($value){
+        return $value + 0;
+    }
+
+    public function formatValues($values){
+        $formats = [
+            self::TYPE_NUMBER => 'self::numberval',
+            self::TYPE_STRING => 'strval',
+            self::TYPE_BOOLEAN => 'boolval',
+            self::TYPE_DATE => 'Carbon::parse',
+            self::TYPE_ENUM => 'intval',
+            self::TYPE_SOURCE => 'intval',
+        ];
+
+        return array_map($formats[$this->type], $values);
     }
 }

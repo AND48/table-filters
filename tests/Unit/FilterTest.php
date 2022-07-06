@@ -2,6 +2,7 @@
 
 namespace AND48\TableFilters\Tests\Unit;
 
+use AND48\TableFilters\Exceptions\TableFiltersException;
 use AND48\TableFilters\Models\Filter;
 use AND48\TableFilters\Tests\TestCase;
 use AND48\TableFilters\Tests\User;
@@ -38,5 +39,22 @@ class FilterTest extends TestCase
         ]);
 //        dump(User::filterList(true));
         $this->assertCount(7, User::filterList(true));
+    }
+
+    /** @test */
+    function check_source_exceptions()
+    {
+        try {
+            User::addFilter([
+                'field' =>'parent_id',
+                'type' => Filter::TYPE_SOURCE,
+                'caption' => 'Parent user',
+                'source_model' => 'Unknown/Model'
+            ]);
+
+        } catch (TableFiltersException $exception){
+            $this->assertEquals(100, $exception->getCode());
+        }
+
     }
 }

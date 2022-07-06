@@ -2,10 +2,10 @@
 
 namespace AND48\TableFilters\Traits;
 
+use AND48\TableFilters\Exceptions\TableFiltersException;
 use AND48\TableFilters\Models\Filter;
-use http\Env\Url;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Arr;
 
 /**
  * Trait Filterable
@@ -47,6 +47,11 @@ trait Filterable
         if (!isset($filter['caption'])){
             $filter['caption'] = '';
         }
+
+        if ($filter['type'] === Filter::TYPE_SOURCE && (!$filter['source_model'] || !class_exists($filter['source_model']))){
+            throw new TableFiltersException('Class "'.$filter['source_model'].'" not exists.', 100);
+        }
+
         return Filter::firstOrCreate($filter);
     }
 
@@ -118,12 +123,63 @@ trait Filterable
 
     /**
      *
-     * get scope for source data
+     * scope for source data
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeFilterSource($query) :Builder{
+        return $query;
+    }
+
+    /**
+     *
+     * filter scope
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilter($query, array $request = []) :Builder{
+        $filters = Filter::find(Arr::pluck($request, 'id'));
+        if ($filters->isEmpty()) {
+            return $query;
+        }
+
+        foreach ($request as $params){
+            $filter = $filters->find($params['id']);
+            if (array_search($params['operator'], config('filters')['operators'][$filter->type]) === false){
+                throw new TableFiltersException('Operator "'.$params['operator'].'" not configured for type "'.$filter->type.'"', 300);
+            }
+
+            if (empty($params['values'] ?? []) || !is_array($params['values'])){
+                continue;
+            }
+
+            $params['values'] = $filter->formatValues($params['values']);
+            switch ($params['operator'] ?? '=') {
+                case '=':
+                    $query->whereIn($filter->field, $params['values']);
+                    break;
+                case '!=':
+                    $query->whereNotIn($filter->field, $params['values']);
+                    break;
+                case '<':
+                case '<=':
+                case '>':
+                case '>=':
+                    $query->where($filter->field, $params['operator'], Arr::first($params['values']));
+                    break;
+                case '~':
+                    $query->where(function ($query) use ($filter, $params){
+                        foreach ($params['values'] as $value){
+                            $query->orWhere($filter->field, 'LIKE', "%$value%");
+                        }
+                    });
+                    break;
+            }
+
+        }
+
         return $query;
     }
 }
