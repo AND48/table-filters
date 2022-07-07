@@ -48,8 +48,8 @@ trait Filterable
             $filter['caption'] = '';
         }
 
-        if ($filter['type'] === Filter::TYPE_SOURCE && (!$filter['source_model'] || !class_exists($filter['source_model']))){
-            throw new TableFiltersException('Class "'.$filter['source_model'].'" not exists.', 100);
+        if ($filter['type'] === Filter::TYPE_SOURCE && (!isset($filter['source_model']) || !class_exists($filter['source_model']))){
+            throw new TableFiltersException('Class "'.($filter['source_model'] ?? '').'" not exists.', 100);
         }
 
         return Filter::firstOrCreate($filter);
@@ -149,6 +149,9 @@ trait Filterable
             $filter = $filters->find($params['id']);
             if (array_search($params['operator'], config('filters')['operators'][$filter->type]) === false){
                 throw new TableFiltersException('Operator "'.$params['operator'].'" not configured for type "'.$filter->type.'"', 300);
+            }
+            if ($filter->type === Filter::TYPE_SOURCE && (!$filter->source_model || !class_exists($filter->source_model))){
+                throw new TableFiltersException('Class "'.$filter->source_model.'" not exists.', 301);
             }
 
             if (!is_array($params['values'])){

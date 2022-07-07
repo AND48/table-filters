@@ -59,7 +59,7 @@ Use **Filterable** trait inside your *Eloquent* model(s).
 Get your filters.
 ```php
 $filters = User::filterList(true, [
-                'status' => ['new','confirmed', 'verified', 'active', 'suspended']]
+                'status' => ['new', 'verified', 'active', 'suspended']]);
 ```
 
 Get source data.
@@ -76,11 +76,11 @@ route('filters.source_data', ['filter_id' => 1, 'query' => '*', 'page' => 2]);
 Filtering model.
 ```php
 $filters = [
-    ['id' => 1, 'operator' => '!=', 'values' => [1,2]],
-    ['id' => 2, 'operator' => '~', 'values' => ['and']],
+    ['id' => 1, 'operator' => '!=', 'values' => [2, 3]],
+    ['id' => 2, 'operator' => '~', 'values' => ['and', 'dy']],
     ['id' => 3, 'operator' => '>=', 'values' => ['1986-06-06']],
     ['id' => 4, 'operator' => '=', 'values' => [false]],
-    ['id' => 6, 'operator' => '=', 'values' => [1,4]],
+    ['id' => 6, 'operator' => '=', 'values' => ['new', 'verified']],
     ['id' => 7, 'operator' => '!=', 'values' => []],
 ];
 $users = User::filter($filters)->get();

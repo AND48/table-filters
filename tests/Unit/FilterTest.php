@@ -49,6 +49,17 @@ class FilterTest extends TestCase
                 'field' =>'parent_id',
                 'type' => Filter::TYPE_SOURCE,
                 'caption' => 'Parent user',
+            ]);
+
+        } catch (TableFiltersException $exception){
+            $this->assertEquals(100, $exception->getCode());
+        }
+
+        try {
+            User::addFilter([
+                'field' =>'parent_id',
+                'type' => Filter::TYPE_SOURCE,
+                'caption' => 'Parent user',
                 'source_model' => 'Unknown/Model'
             ]);
 

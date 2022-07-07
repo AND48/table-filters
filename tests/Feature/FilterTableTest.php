@@ -215,5 +215,42 @@ class FilterTableTest extends TestCase
         }
     }
 
+    /** @test */
+    function check_filter_table_multiple()
+    {
+        User::addFilters([
+            ['field' =>'id', 'type' => Filter::TYPE_NUMBER, 'caption' => 'ID'],
+            ['field' =>'name', 'type' => Filter::TYPE_STRING, 'caption' => 'Name'],
+            ['field' =>'birthday', 'type' => Filter::TYPE_DATE, 'caption' => 'Birthday'],
+            ['field' =>'is_blocked', 'type' => Filter::TYPE_BOOLEAN, 'caption' => 'Is blocked'],
+            ['field' =>'balance', 'type' => Filter::TYPE_NUMBER, 'caption' => 'Balance'],
+            ['field' =>'status', 'type' => Filter::TYPE_ENUM, 'caption' => 'Status'],
+            ['field' =>'parent_id', 'type' => Filter::TYPE_SOURCE, 'caption' => 'Parent user', 'source_model' => User::class],
+        ]);
+
+        $filters = [
+            ['id' => 1, 'operator' => '!=', 'values' => [2,3]],
+            ['id' => 2, 'operator' => '~', 'values' => ['and', 'dy']],
+            ['id' => 3, 'operator' => '>=', 'values' => ['1986-06-06']],
+            ['id' => 4, 'operator' => '=', 'values' => [false]],
+            ['id' => 6, 'operator' => '=', 'values' => [User::STATUS_NEW, User::STATUS_VERIFIED]],
+            ['id' => 7, 'operator' => '=', 'values' => []],
+        ];
+        User::factory()->create([
+            'name' => 'Andy',
+            'birthday' => '1986-06-06',
+            'is_blocked' => false,
+            'status' => User::STATUS_NEW,
+            'parent_id' => null,]);
+        User::factory()->create([
+            'name' => 'Andy',
+            'birthday' => '1986-06-06',
+            'is_blocked' => false,
+            'status' => User::STATUS_NEW,
+            'parent_id' => 1,]);
+        $users = User::filter($filters)->get();
+        $this->assertCount(1, $users);
+    }
+
 }
 
