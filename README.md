@@ -72,3 +72,16 @@ Load source data by route.
 ```php
 route('filters.source_data', ['filter_id' => 1, 'query' => '*', 'page' => 2]);
 ```
+
+Filtering model.
+```php
+$filters = [
+    ['id' => 1, 'operator' => '!=', 'values' => [1,2]],
+    ['id' => 2, 'operator' => '~', 'values' => ['and']],
+    ['id' => 3, 'operator' => '>=', 'values' => ['1986-06-06']],
+    ['id' => 4, 'operator' => '=', 'values' => [false]],
+    ['id' => 6, 'operator' => '=', 'values' => [1,4]],
+    ['id' => 7, 'operator' => '!=', 'values' => []],
+];
+$users = User::filter($filters)->get();
+```
