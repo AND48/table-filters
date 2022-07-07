@@ -28,6 +28,36 @@ class FilterTableTest extends TestCase
     }
 
     /** @test */
+    function check_filter_table_null()
+    {
+        User::addFilter([
+            'field' =>'parent_id',
+            'type' => Filter::TYPE_SOURCE,
+            'caption' => 'Parent user',
+            'source_model' => User::class
+        ]);
+
+        User::factory()->count(97)->create();
+
+        User::factory()->create(['parent_id' => 8]);
+        User::factory()->create(['parent_id' => 48]);
+        User::factory()->create(['parent_id' => 88]);
+
+
+        $tests = [
+            ['operator' => '=', 'values' => [], 'assert_count' => 97],
+            ['operator' => '!=', 'values' => [], 'assert_count' => 3],
+            ['operator' => '!=', 'values' => [], 'assert_count' => 3],
+        ];
+
+        foreach ($tests as $test) {
+            $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
+            $users = User::filter($filters)->get();
+            $this->assertCount($test['assert_count'], $users);
+        }
+    }
+
+    /** @test */
     function check_filter_table_number()
     {
         User::addFilters([

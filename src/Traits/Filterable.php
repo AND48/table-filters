@@ -151,7 +151,16 @@ trait Filterable
                 throw new TableFiltersException('Operator "'.$params['operator'].'" not configured for type "'.$filter->type.'"', 300);
             }
 
-            if (empty($params['values'] ?? []) || !is_array($params['values'])){
+            if (!is_array($params['values'])){
+                continue;
+            }
+
+            if (empty($params['values'])){
+                if ($params['operator'] === '!='){
+                    $query->whereNotNull($filter->field);
+                } else {
+                    $query->whereNull($filter->field);
+                }
                 continue;
             }
 
