@@ -71,12 +71,16 @@ class Filter extends Model
         return $value + 0;
     }
 
+    private static function dateval($value){
+        return Carbon::parse($value);
+    }
+
     public function formatValues($values){
         $formats = [
             self::TYPE_NUMBER => 'self::numberval',
             self::TYPE_STRING => 'strval',
             self::TYPE_BOOLEAN => 'boolval',
-            self::TYPE_DATE => 'Carbon::parse',
+            self::TYPE_DATE => 'self::dateval',
             self::TYPE_ENUM => 'intval',
             self::TYPE_SOURCE => 'intval',
         ];

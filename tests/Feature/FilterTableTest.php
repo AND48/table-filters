@@ -136,5 +136,33 @@ class FilterTableTest extends TestCase
         }
     }
 
+    /** @test */
+    function check_filter_table_date()
+    {
+        User::addFilters([
+            ['field' =>'birthday', 'type' => Filter::TYPE_DATE, 'caption' => 'Birthday'],
+        ]);
+
+        User::factory()->create(['birthday' => '1986-06-06']);
+        User::factory()->create(['birthday' => '1986-06-08']);
+        User::factory()->create(['birthday' => '1986-06-12']);
+        User::factory()->create(['birthday' => '1986-06-14']);
+        User::factory()->create(['birthday' => '1986-06-16']);
+        $tests = [
+            ['operator' => '=', 'values' => ['1986-06-06', '1986-06-12'], 'assert_count' => 2],
+            ['operator' => '!=', 'values' => ['1986-06-06', '1986-06-12'], 'assert_count' => 3],
+            ['operator' => '<', 'values' => ['1986-06-08'], 'assert_count' => 1],
+            ['operator' => '<=', 'values' => ['1986-06-08'], 'assert_count' => 2],
+            ['operator' => '>', 'values' => ['1986-06-08'], 'assert_count' => 3],
+            ['operator' => '>=', 'values' => ['1986-06-08'], 'assert_count' => 4],
+        ];
+
+        foreach ($tests as $test) {
+            $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
+            $users = User::filter($filters)->get();
+            $this->assertCount($test['assert_count'], $users);
+        }
+    }
+
 }
 

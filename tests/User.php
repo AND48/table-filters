@@ -13,6 +13,8 @@ class User extends Model
 
     protected $fillable = ['parent_id'];
 
+    protected $dates = ['birthday'];
+
     const STATUS_NEW = 'new';
     const STATUSES = [self::STATUS_NEW, 'verified', 'active', 'suspended'];
 
