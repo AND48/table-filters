@@ -47,7 +47,6 @@ class FilterTableTest extends TestCase
         $tests = [
             ['operator' => '=', 'values' => [], 'assert_count' => 97],
             ['operator' => '!=', 'values' => [], 'assert_count' => 3],
-            ['operator' => '!=', 'values' => [], 'assert_count' => 3],
         ];
 
         foreach ($tests as $test) {
@@ -117,10 +116,7 @@ class FilterTableTest extends TestCase
 
         User::factory()->count(97)->create();
 
-        User::factory()->create(['is_blocked' => true]);
-        User::factory()->create(['is_blocked' => true]);
-        User::factory()->create(['is_blocked' => true]);
-
+        User::factory()->count(3)->create(['is_blocked' => true]);
 
         $tests = [
             ['operator' => '=', 'values' => [true], 'assert_count' => 3],
@@ -148,6 +144,7 @@ class FilterTableTest extends TestCase
         User::factory()->create(['birthday' => '1986-06-12']);
         User::factory()->create(['birthday' => '1986-06-14']);
         User::factory()->create(['birthday' => '1986-06-16']);
+        User::factory()->create(['birthday' => null]);
         $tests = [
             ['operator' => '=', 'values' => ['1986-06-06', '1986-06-12'], 'assert_count' => 2],
             ['operator' => '!=', 'values' => ['1986-06-06', '1986-06-12'], 'assert_count' => 3],
@@ -155,6 +152,60 @@ class FilterTableTest extends TestCase
             ['operator' => '<=', 'values' => ['1986-06-08'], 'assert_count' => 2],
             ['operator' => '>', 'values' => ['1986-06-08'], 'assert_count' => 3],
             ['operator' => '>=', 'values' => ['1986-06-08'], 'assert_count' => 4],
+            ['operator' => '=', 'values' => [], 'assert_count' => 1],
+            ['operator' => '!=', 'values' => [], 'assert_count' => 5],
+        ];
+
+        foreach ($tests as $test) {
+            $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
+            $users = User::filter($filters)->get();
+            $this->assertCount($test['assert_count'], $users);
+        }
+    }
+
+    /** @test */
+    function check_filter_table_enum()
+    {
+        User::addFilters([
+            ['field' =>'status', 'type' => Filter::TYPE_ENUM, 'caption' => 'Status'],
+        ]);
+
+        User::factory()->count(10)->create(['status' => User::STATUS_NEW]);
+        User::factory()->count(10)->create(['status' => User::STATUS_VERIFIED]);
+        User::factory()->count(10)->create(['status' => User::STATUS_SUSPENDED]);
+
+        $tests = [
+            ['operator' => '=', 'values' => [User::STATUS_NEW, User::STATUS_VERIFIED], 'assert_count' => 20],
+            ['operator' => '!=', 'values' => [User::STATUS_SUSPENDED], 'assert_count' => 20],
+        ];
+
+        foreach ($tests as $test) {
+            $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
+            $users = User::filter($filters)->get();
+            $this->assertCount($test['assert_count'], $users);
+        }
+    }
+
+    /** @test */
+    function check_filter_table_source()
+    {
+        User::addFilter([
+            'field' =>'parent_id',
+            'type' => Filter::TYPE_SOURCE,
+            'caption' => 'Parent user',
+            'source_model' => User::class
+        ]);
+
+        User::factory()->count(97)->create();
+
+        User::factory()->create(['parent_id' => 8]);
+        User::factory()->create(['parent_id' => 48]);
+        User::factory()->create(['parent_id' => 88]);
+
+
+        $tests = [
+            ['operator' => '=', 'values' => [48], 'assert_count' => 1],
+            ['operator' => '!=', 'values' => [48], 'assert_count' => 2],
         ];
 
         foreach ($tests as $test) {

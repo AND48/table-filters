@@ -81,10 +81,13 @@ class Filter extends Model
             self::TYPE_STRING => 'strval',
             self::TYPE_BOOLEAN => 'boolval',
             self::TYPE_DATE => 'self::dateval',
-            self::TYPE_ENUM => 'intval',
+//            self::TYPE_ENUM => 'intval',
             self::TYPE_SOURCE => 'intval',
         ];
 
+        if (!isset($formats[$this->type])){
+            return $values;
+        }
         return array_map($formats[$this->type], $values);
     }
 }

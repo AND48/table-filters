@@ -16,7 +16,10 @@ class User extends Model
     protected $dates = ['birthday'];
 
     const STATUS_NEW = 'new';
-    const STATUSES = [self::STATUS_NEW, 'verified', 'active', 'suspended'];
+    const STATUS_VERIFIED = 'verified';
+    const STATUS_ACTIVE = 'active';
+    const STATUS_SUSPENDED = 'suspended';
+    const STATUSES = [self::STATUS_NEW, self::STATUS_VERIFIED, self::STATUS_ACTIVE, self::STATUS_SUSPENDED];
 
     protected static function newFactory(){
         return UserFactory::new();
