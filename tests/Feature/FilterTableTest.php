@@ -77,5 +77,34 @@ class FilterTableTest extends TestCase
         }
     }
 
+
+    /** @test */
+    function check_filter_table_boolean()
+    {
+        User::addFilters([
+            ['field' =>'is_blocked', 'type' => Filter::TYPE_BOOLEAN, 'caption' => 'Is blocked'],
+        ]);
+
+        User::factory()->count(97)->create();
+
+        User::factory()->create(['is_blocked' => true]);
+        User::factory()->create(['is_blocked' => true]);
+        User::factory()->create(['is_blocked' => true]);
+
+
+        $tests = [
+            ['operator' => '=', 'values' => [true], 'assert_count' => 3],
+            ['operator' => '=', 'values' => [false], 'assert_count' => 97],
+            ['operator' => '!=', 'values' => [true], 'assert_count' => 97],
+            ['operator' => '!=', 'values' => [false], 'assert_count' => 3],
+        ];
+
+        foreach ($tests as $test) {
+            $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
+            $users = User::filter($filters)->get();
+            $this->assertCount($test['assert_count'], $users);
+        }
+    }
+
 }
 

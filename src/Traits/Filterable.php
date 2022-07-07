@@ -155,13 +155,25 @@ trait Filterable
                 continue;
             }
 
+            if ($this->type === Filter::TYPE_BOOLEAN){
+                $params['values'] = Arr::first($params['values']);
+            }
+
             $params['values'] = $filter->formatValues($params['values']);
             switch ($params['operator'] ?? '=') {
                 case '=':
-                    $query->whereIn($filter->field, $params['values']);
+                    if (count($params['values']) == 1){
+                        $query->where($filter->field, Arr::first($params['values']));
+                    } else {
+                        $query->whereIn($filter->field, $params['values']);
+                    }
                     break;
                 case '!=':
-                    $query->whereNotIn($filter->field, $params['values']);
+                    if (count($params['values']) == 1){
+                        $query->where($filter->field, '!=', Arr::first($params['values']));
+                    } else {
+                        $query->whereNotIn($filter->field, $params['values']);
+                    }
                     break;
                 case '<':
                 case '<=':
