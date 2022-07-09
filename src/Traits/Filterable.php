@@ -140,13 +140,29 @@ trait Filterable
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeFilter($query, array $request = []) :Builder{
+        $request = array_map(function($params){
+            if (is_object($params)) {
+                return (array)$params;
+            } elseif (is_string($params)){
+                $original_params = $params;
+                $params = json_decode($params);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new TableFiltersException('Invalid filter "'.$original_params.'"', 302);
+                }
+                return (array)$params;
+            } elseif(is_array($params)) {
+                return $params;
+            } else {
+                throw new TableFiltersException('Invalid filter format', 303);
+            }
+        }, $request);
+
         $filters = Filter::where('model', self::class)->find(Arr::pluck($request, 'id'));
         if ($filters->isEmpty()) {
             return $query;
         }
 
         foreach ($request as $params){
-            $params = (array)$params;
             $filter = $filters->find($params['id']);
             if (array_search($params['operator'], config('filters')['operators'][$filter->type]) === false){
                 throw new TableFiltersException('Operator "'.$params['operator'].'" not configured for type "'.$filter->type.'"', 300);
