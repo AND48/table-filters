@@ -68,7 +68,7 @@ class Filter extends Model
     }
 
     private static function numberval($value){
-        return $value + 0;
+        return floatval($value) + 0;
     }
 
     private static function dateval($value){
