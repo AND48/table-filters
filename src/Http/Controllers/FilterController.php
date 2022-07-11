@@ -2,6 +2,7 @@
 
 namespace AND48\TableFilters\Http\Controllers;
 
+use AND48\TableFilters\Http\Resources\SourceDataResource;
 use AND48\TableFilters\Models\Filter;
 
 class FilterController extends Controller
@@ -11,7 +12,7 @@ class FilterController extends Controller
         //
         $filter = Filter::findOrFail(request('filter_id'));
 
-        return response()->json($filter->sourceData(
+        return SourceDataResource::collection($filter->sourceData(
             request()->input('page', 1), request()->input('query')));
     }
 }

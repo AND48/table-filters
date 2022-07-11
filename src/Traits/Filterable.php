@@ -118,9 +118,9 @@ trait Filterable
      *
      * @return array
      */
-    public static function getFilterSourceTransform($item) :array{
-        return $item->only([self::getFilterSourceKeyName(), self::getFilterSourceField()]);
-    }
+//    public static function getFilterSourceTransform($item) :array{
+//        return $item->only([self::getFilterSourceKeyName(), self::getFilterSourceField()]);
+//    }
 
     /**
      *

@@ -29,9 +29,8 @@ class User extends Model
         return $this->belongsTo(self::class);
     }
 
-    public static function getFilterSourceTransform($item){
-        $item->parent_user_name = $item->parent->name ?? '';
-        return $item->only(['id', 'name', 'parent_user_name']);
+    public function getParentUserNameAttribute(){
+        return $item->parent->name ?? '';
     }
 
     public static function getFilterSourceLoad(){
@@ -40,5 +39,9 @@ class User extends Model
 
     public function scopeFilterSource($query){
         return $query->where('is_blocked', false);
+    }
+
+    public static function getFilterSourceField() :string{
+        return 'email';
     }
 }

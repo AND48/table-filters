@@ -26,11 +26,10 @@ class GetSourceDataTest extends TestCase
         ]);
         User::factory()->count($count)->create();
 
-        $response = $this->get(route('filters.source_data', ['filter_id' => 1, 'page' => 2]))->original;
-
+        $response = (array)json_decode($this->get(route('filters.source_data', ['filter_id' => 1, 'page' => 2]))->getContent())->data;
         $this->assertCount($count - User::getFilterSourcePerPage(), $response);
-        $this->assertArrayHasKey('id', Arr::first($response));
-        $this->assertArrayHasKey(User::getFilterSourceField(), Arr::first($response));
+        $this->assertArrayHasKey('id', (array)Arr::first($response));
+        $this->assertArrayHasKey('name', (array)Arr::first($response));
     }
 
     /** @test */
@@ -42,33 +41,17 @@ class GetSourceDataTest extends TestCase
             'caption' => 'Parent user',
             'source_model' => User::class
         ]);
-        User::factory()->create(['name' => 'Andrii']);
-        User::factory()->create(['name' => 'Alex']);
-        User::factory()->create(['name' => 'Andy']);
-        User::factory()->create(['name' => 'Mike']);
-        User::factory()->create(['name' => 'Sandy']);
+        User::factory()->create(['email' => 'Andrii@localhost.com']);
+        User::factory()->create(['email' => 'Alex@localhost.com']);
+        User::factory()->create(['email' => 'Andy@localhost.com']);
+        User::factory()->create(['email' => 'Mike@localhost.com']);
+        User::factory()->create(['email' => 'Sandy@localhost.com']);
 
-        $response = $this->get(route('filters.source_data', ['filter_id' => 1, 'query' => 'and']))->original;
+        $response = (array)json_decode($this->get(route('filters.source_data', ['filter_id' => 1, 'query' => 'and']))->getContent())->data;
 
         $this->assertCount(3, $response);
-        $this->assertArrayHasKey('id', Arr::first($response));
-        $this->assertArrayHasKey(User::getFilterSourceField(), Arr::first($response));
-    }
-
-    /** @test */
-    function check_source_transform()
-    {
-        $count = 1;
-
-        $filter = User::addFilter([
-            'field' =>'parent_id',
-            'type' => Filter::TYPE_SOURCE,
-            'caption' => 'Parent user',
-            'source_model' => User::class
-        ]);
-        User::factory()->count($count)->create();
-        $response = $filter->sourceData();
-        $this->assertArrayHasKey('parent_user_name', Arr::first($response));
+        $this->assertArrayHasKey('id', (array)Arr::first($response));
+        $this->assertArrayHasKey('name', (array)Arr::first($response));
     }
 
     /** @test */
@@ -95,7 +78,9 @@ class GetSourceDataTest extends TestCase
         \DB::listen(function($sql) use (&$counter){
             $counter ++;
         });
-        $filter->sourceData();
+        $response = $filter->sourceData();
+        $response = $response->first()->append('parent_user_name')->toArray();
+        $this->assertArrayHasKey('parent_user_name', $response);
         $this->assertEquals(2, $counter);
     }
 

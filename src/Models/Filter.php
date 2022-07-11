@@ -47,7 +47,7 @@ class Filter extends Model
         $order_by = $model::getFilterSourceOrderBy();
         $load = $model::getFilterSourceLoad();
 
-        $query = $model->query();
+        $query = $model->select();
 
         if ($search_query) {
             $query = $query->where($source_field, 'LIKE', "%$search_query%");
@@ -61,10 +61,7 @@ class Filter extends Model
             ->skip($offset)
             ->take($per_page)
             ->orderBy($order_by)
-            ->get()
-            ->transform(function($item) use ($model){
-                return $model::getFilterSourceTransform($item);
-            });
+            ->get();
     }
 
     private static function numberval($value){
