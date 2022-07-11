@@ -6,6 +6,7 @@ use AND48\TableFilters\Exceptions\TableFiltersException;
 use AND48\TableFilters\Models\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 /**
  * Trait Filterable
@@ -164,6 +165,11 @@ trait Filterable
 
         foreach ($request as $params){
             $filter = $filters->find($params['id']);
+            if(!Str::contains('.',  $filter->field)){
+                $filter->field = $this->getTable().'.'.$filter->field;
+            }
+
+
             if (array_search($params['operator'], config('filters')['operators'][$filter->type]) === false){
                 throw new TableFiltersException('Operator "'.$params['operator'].'" not configured for type "'.$filter->type.'"', 300);
             }
