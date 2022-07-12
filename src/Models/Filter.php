@@ -43,9 +43,9 @@ class Filter extends Model
 
         $model = app($this->source_model);
         $source_field = $model::getFilterSourceField();
-        $per_page = $model::getFilterSourcePerPage();
         $order_by = $model::getFilterSourceOrderBy();
         $load = $model::getFilterSourceLoad();
+        $per_page = config('filters.source_data_per_page');
 
         $query = $model->select();
 

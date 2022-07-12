@@ -27,7 +27,7 @@ class GetSourceDataTest extends TestCase
         User::factory()->count($count)->create();
 
         $response = (array)json_decode($this->get(route('filters.source_data', ['filter_id' => 1, 'page' => 2]))->getContent())->data;
-        $this->assertCount($count - User::getFilterSourcePerPage(), $response);
+        $this->assertCount($count - config('filters.source_data_per_page'), $response);
         $this->assertArrayHasKey('id', (array)Arr::first($response));
         $this->assertArrayHasKey('name', (array)Arr::first($response));
     }

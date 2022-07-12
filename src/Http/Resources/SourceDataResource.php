@@ -15,7 +15,7 @@ class SourceDataResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
+            'id' => $this->{$this::getFilterSourceKeyName()},
             'name' => $this->{$this::getFilterSourceField()},
         ];
     }

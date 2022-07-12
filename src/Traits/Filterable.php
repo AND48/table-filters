@@ -94,16 +94,6 @@ trait Filterable
 
     /**
      *
-     * get field count per page for source data
-     *
-     * @return int
-     */
-    public static function getFilterSourcePerPage() :int{
-        return 10;
-    }
-
-    /**
-     *
      * get lazy load array for source data
      *
      * @return array
