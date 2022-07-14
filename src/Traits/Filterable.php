@@ -155,7 +155,7 @@ trait Filterable
 
         foreach ($request as $params){
             $filter = $filters->find($params['id']);
-            if(!Str::contains('.',  $filter->field)){
+            if(!Str::contains($filter->field, '.')){
                 $filter->field = $this->getTable().'.'.$filter->field;
             }
 
