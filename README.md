@@ -85,3 +85,6 @@ $filters = [
 ];
 $users = User::filter($filters)->get();
 ```
+
+Use it with client library
+[`table-filters-client`](https://www.npmjs.com/package/table-filters-client)
