@@ -28,7 +28,7 @@ class FilterTest extends TestCase
     /** @test */
     function a_model_has_a_filter()
     {
-        User::addFilters([
+        User::addTableFilters([
             ['field' =>'id', 'type' => Filter::TYPE_NUMBER, 'caption' => 'ID'],
             ['field' =>'name', 'type' => Filter::TYPE_STRING, 'caption' => 'Name'],
             ['field' =>'birthday', 'type' => Filter::TYPE_DATE, 'caption' => 'Birthday'],
@@ -37,15 +37,15 @@ class FilterTest extends TestCase
             ['field' =>'status', 'type' => Filter::TYPE_ENUM, 'caption' => 'Status'],
             ['field' =>'parent_id', 'type' => Filter::TYPE_SOURCE, 'caption' => 'Parent user', 'source_model' => User::class],
         ]);
-//        dump(User::filterList(true));
-        $this->assertCount(7, User::filterList(true));
+//        dump(User::tableFilterList(true));
+        $this->assertCount(7, User::tableFilterList(true));
     }
 
     /** @test */
     function check_source_exceptions()
     {
         try {
-            User::addFilter([
+            User::addTableFilter([
                 'field' =>'parent_id',
                 'type' => Filter::TYPE_SOURCE,
                 'caption' => 'Parent user',
@@ -56,7 +56,7 @@ class FilterTest extends TestCase
         }
 
         try {
-            User::addFilter([
+            User::addTableFilter([
                 'field' =>'parent_id',
                 'type' => Filter::TYPE_SOURCE,
                 'caption' => 'Parent user',

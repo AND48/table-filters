@@ -42,7 +42,7 @@ Create filters for model.
 ```php
 use AND48\TableFilters\Models\Filter;
 ...
-User::addFilters([
+User::addTableFilters([
     ['field' =>'id', 'type' => Filter::TYPE_NUMBER, 'caption' => 'ID'],
     ['field' =>'name', 'type' => Filter::TYPE_STRING, 'caption' => 'Name'],
     ['field' =>'birthday', 'type' => Filter::TYPE_DATE, 'caption' => 'Birthday'],
@@ -58,7 +58,7 @@ Use **Filterable** trait inside your *Eloquent* model(s).
 
 Get your filters.
 ```php
-$filters = User::filterList(true, [
+$filters = User::tableFilterList(true, [
                 'status' => ['new', 'verified', 'active', 'suspended']]);
 ```
 
@@ -83,7 +83,7 @@ $filters = [
     ['id' => 6, 'operator' => '=', 'values' => ['new', 'verified']],
     ['id' => 7, 'operator' => '!=', 'values' => []],
 ];
-$users = User::filter($filters)->get();
+$users = User::tableFilter($filters)->get();
 ```
 
 Use it with client library

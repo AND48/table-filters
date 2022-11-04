@@ -42,9 +42,9 @@ class Filter extends Model
         }
 
         $model = app($this->source_model);
-        $source_field = $model::getFilterSourceField();
-        $order_by = $model::getFilterSourceOrderBy();
-        $load = $model::getFilterSourceLoad();
+        $source_field = $model::getTableFilterSourceField();
+        $order_by = $model::getTableFilterSourceOrderBy();
+        $load = $model::getTableFilterSourceLoad();
         $per_page = config('filters.source_data_per_page');
 
         $query = $model->select();
@@ -57,7 +57,7 @@ class Filter extends Model
         }
 
         $offset = ($page - 1) * $per_page;
-        return $query->filterSource()
+        return $query->tableFilterSource()
             ->skip($offset)
             ->take($per_page)
             ->orderBy($order_by)

@@ -9,21 +9,21 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 /**
- * Trait Filterable
+ * Trait TableFilterable
  * @package AND48\TableFilters\Traits
  */
-trait Filterable
+trait TableFilterable
 {
-    protected static function getFilterModel(){
+    protected static function getTableFilterModel(){
         return self::class;
     }
 
-    protected static function getFilterResponseFields(){
+    protected static function getTableFilterResponseFields(){
         return ['id','type','caption','operators', 'values'];
     }
 
-    public static function filterList($load_operators = true, $enum_values = []){
-        $filters = Filter::where('model', self::getFilterModel())->get();
+    public static function tableFilterList($load_operators = true, $enum_values = []){
+        $filters = Filter::where('model', self::getTableFilterModel())->get();
         if ($load_operators){
             $filters->transform(function ($filter) use ($load_operators, $enum_values){
                 $filter->operators = config('filters.operators.'.$filter['type']);
@@ -31,14 +31,14 @@ trait Filterable
                 if ($filter['type'] === Filter::TYPE_ENUM){
                     $filter->values = $enum_values[$filter['field']] ?? [];
                 }
-                return $filter->only(self::getFilterResponseFields());
+                return $filter->only(self::getTableFilterResponseFields());
             });
         }
         return $filters;
     }
 
-    public static function addFilter($filter){
-        $filter['model'] = self::getFilterModel();
+    public static function addTableFilter($filter){
+        $filter['model'] = self::getTableFilterModel();
         if (!isset($filter['field'])){
             $filter['field'] = 'id';
         }
@@ -56,9 +56,9 @@ trait Filterable
         return Filter::firstOrCreate($filter);
     }
 
-    public static function addFilters($filters){
+    public static function addTableFilters($filters){
         foreach ($filters as $filter){
-            self::addFilter($filter);
+            self::addTableFilter($filter);
         }
     }
 
@@ -68,7 +68,7 @@ trait Filterable
      *
      * @return string
      */
-    public static function getFilterSourceField() :string{
+    public static function getTableFilterSourceField() :string{
         return 'name';
     }
 
@@ -78,7 +78,7 @@ trait Filterable
      *
      * @return string
      */
-    public static function getFilterSourceKeyName() :string{
+    public static function getTableFilterSourceKeyName() :string{
         return (new static())->getKeyName();
     }
 
@@ -88,8 +88,8 @@ trait Filterable
      *
      * @return string
      */
-    public static function getFilterSourceOrderBy():string{
-        return self::getFilterSourceKeyName();
+    public static function getTableFilterSourceOrderBy():string{
+        return self::getTableFilterSourceKeyName();
     }
 
     /**
@@ -98,7 +98,7 @@ trait Filterable
      *
      * @return array
      */
-    public static function getFilterSourceLoad() :array{
+    public static function getTableFilterSourceLoad() :array{
         return [];
     }
 
@@ -108,8 +108,8 @@ trait Filterable
      *
      * @return array
      */
-//    public static function getFilterSourceTransform($item) :array{
-//        return $item->only([self::getFilterSourceKeyName(), self::getFilterSourceField()]);
+//    public static function getTableFilterSourceTransform($item) :array{
+//        return $item->only([self::getTableFilterSourceKeyName(), self::getTableFilterSourceField()]);
 //    }
 
     /**
@@ -119,7 +119,7 @@ trait Filterable
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFilterSource($query) :Builder{
+    public function scopeTableFilterSource($query) :Builder{
         return $query;
     }
 
@@ -130,7 +130,7 @@ trait Filterable
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFilter($query, array $request = []) :Builder{
+    public function scopeTableFilter($query, array $request = []) :Builder{
         $request = array_map(function($params){
             if (is_object($params)) {
                 return (array)$params;

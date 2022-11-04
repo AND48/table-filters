@@ -2,14 +2,14 @@
 
 namespace AND48\TableFilters\Tests;
 
-use AND48\TableFilters\Traits\Filterable;
+use AND48\TableFilters\Traits\TableFilterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Collection;
 
 class User extends Model
 {
-    use Filterable, HasFactory;
+    use TableFilterable, HasFactory;
 
     protected $fillable = ['parent_id'];
 
@@ -33,15 +33,15 @@ class User extends Model
         return $item->parent->name ?? '';
     }
 
-    public static function getFilterSourceLoad(){
+    public static function getTableFilterSourceLoad(){
         return ['parent'];
     }
 
-    public function scopeFilterSource($query){
+    public function scopeTableFilterSource($query){
         return $query->where('is_blocked', false);
     }
 
-    public static function getFilterSourceField() :string{
+    public static function getTableFilterSourceField() :string{
         return 'email';
     }
 }

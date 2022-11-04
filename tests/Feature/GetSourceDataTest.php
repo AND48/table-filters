@@ -18,7 +18,7 @@ class GetSourceDataTest extends TestCase
     {
         $count = 16;
 
-        User::addFilter([
+        User::addTableFilter([
             'field' =>'parent_id',
             'type' => Filter::TYPE_SOURCE,
             'caption' => 'Parent user',
@@ -35,7 +35,7 @@ class GetSourceDataTest extends TestCase
     /** @test */
     function check_source_search()
     {
-        User::addFilter([
+        User::addTableFilter([
             'field' =>'parent_id',
             'type' => Filter::TYPE_SOURCE,
             'caption' => 'Parent user',
@@ -59,7 +59,7 @@ class GetSourceDataTest extends TestCase
     {
         $count = 5;
 
-        $filter = User::addFilter([
+        $filter = User::addTableFilter([
             'field' =>'parent_id',
             'type' => Filter::TYPE_SOURCE,
             'caption' => 'Parent user',
@@ -87,7 +87,7 @@ class GetSourceDataTest extends TestCase
     /** @test */
     function check_source_scope()
     {
-        $filter = User::addFilter([
+        $filter = User::addTableFilter([
             'field' =>'parent_id',
             'type' => Filter::TYPE_SOURCE,
             'caption' => 'Parent user',
@@ -104,7 +104,7 @@ class GetSourceDataTest extends TestCase
 //    function check_source_exceptions()
 //    {
 //        try {
-//            $filter = User::addFilter([
+//            $filter = User::addTableFilter([
 //                'field' =>'parent_id',
 //                'type' => Filter::TYPE_STRING,
 //                'caption' => 'Parent user',
@@ -117,7 +117,7 @@ class GetSourceDataTest extends TestCase
 //        }
 //
 //        try {
-//            $filter = User::addFilter([
+//            $filter = User::addTableFilter([
 //                'field' =>'parent_id',
 //                'type' => Filter::TYPE_SOURCE,
 //                'caption' => 'Parent user',

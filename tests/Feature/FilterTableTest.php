@@ -16,11 +16,11 @@ class FilterTableTest extends TestCase
     function check_filter_exceptions()
     {
         try {
-            User::addFilters([
+            User::addTableFilters([
                 ['field' =>'id', 'type' => Filter::TYPE_NUMBER, 'caption' => 'ID'],
             ]);
             $filters = [['id' => 1, 'operator' => '~', 'values' => [1]]];
-            User::filter($filters)->get();
+            User::tableFilter($filters)->get();
         } catch (TableFiltersException $exception){
             $this->assertEquals(300, $exception->getCode());
         }
@@ -30,7 +30,7 @@ class FilterTableTest extends TestCase
     /** @test */
     function check_filter_table_null()
     {
-        User::addFilter([
+        User::addTableFilter([
             'field' =>'parent_id',
             'type' => Filter::TYPE_SOURCE,
             'caption' => 'Parent user',
@@ -51,7 +51,7 @@ class FilterTableTest extends TestCase
 
         foreach ($tests as $test) {
             $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
-            $users = User::filter($filters)->get();
+            $users = User::tableFilter($filters)->get();
             $this->assertCount($test['assert_count'], $users);
         }
     }
@@ -59,7 +59,7 @@ class FilterTableTest extends TestCase
     /** @test */
     function check_filter_table_number()
     {
-        User::addFilters([
+        User::addTableFilters([
             ['field' =>'id', 'type' => Filter::TYPE_NUMBER, 'caption' => 'ID'],
         ]);
 
@@ -75,7 +75,7 @@ class FilterTableTest extends TestCase
 
         foreach ($tests as $test) {
             $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
-            $users = User::filter($filters)->get();
+            $users = User::tableFilter($filters)->get();
             $this->assertCount($test['assert_count'], $users);
         }
     }
@@ -83,7 +83,7 @@ class FilterTableTest extends TestCase
     /** @test */
     function check_filter_table_string()
     {
-        User::addFilters([
+        User::addTableFilters([
             ['field' =>'name', 'type' => Filter::TYPE_STRING, 'caption' => 'Name'],
         ]);
 
@@ -101,7 +101,7 @@ class FilterTableTest extends TestCase
 
         foreach ($tests as $test) {
             $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
-            $users = User::filter($filters)->get();
+            $users = User::tableFilter($filters)->get();
             $this->assertCount($test['assert_count'], $users);
         }
     }
@@ -110,7 +110,7 @@ class FilterTableTest extends TestCase
     /** @test */
     function check_filter_table_boolean()
     {
-        User::addFilters([
+        User::addTableFilters([
             ['field' =>'is_blocked', 'type' => Filter::TYPE_BOOLEAN, 'caption' => 'Is blocked'],
         ]);
 
@@ -127,7 +127,7 @@ class FilterTableTest extends TestCase
 
         foreach ($tests as $test) {
             $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
-            $users = User::filter($filters)->get();
+            $users = User::tableFilter($filters)->get();
             $this->assertCount($test['assert_count'], $users);
         }
     }
@@ -135,7 +135,7 @@ class FilterTableTest extends TestCase
     /** @test */
     function check_filter_table_date()
     {
-        User::addFilters([
+        User::addTableFilters([
             ['field' =>'birthday', 'type' => Filter::TYPE_DATE, 'caption' => 'Birthday'],
         ]);
 
@@ -158,7 +158,7 @@ class FilterTableTest extends TestCase
 
         foreach ($tests as $test) {
             $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
-            $users = User::filter($filters)->get();
+            $users = User::tableFilter($filters)->get();
             $this->assertCount($test['assert_count'], $users);
         }
     }
@@ -166,7 +166,7 @@ class FilterTableTest extends TestCase
     /** @test */
     function check_filter_table_enum()
     {
-        User::addFilters([
+        User::addTableFilters([
             ['field' =>'status', 'type' => Filter::TYPE_ENUM, 'caption' => 'Status'],
         ]);
 
@@ -181,7 +181,7 @@ class FilterTableTest extends TestCase
 
         foreach ($tests as $test) {
             $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
-            $users = User::filter($filters)->get();
+            $users = User::tableFilter($filters)->get();
             $this->assertCount($test['assert_count'], $users);
         }
     }
@@ -189,7 +189,7 @@ class FilterTableTest extends TestCase
     /** @test */
     function check_filter_table_source()
     {
-        User::addFilter([
+        User::addTableFilter([
             'field' =>'parent_id',
             'type' => Filter::TYPE_SOURCE,
             'caption' => 'Parent user',
@@ -210,7 +210,7 @@ class FilterTableTest extends TestCase
 
         foreach ($tests as $test) {
             $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
-            $users = User::filter($filters)->get();
+            $users = User::tableFilter($filters)->get();
             $this->assertCount($test['assert_count'], $users);
         }
     }
@@ -218,7 +218,7 @@ class FilterTableTest extends TestCase
     /** @test */
     function check_filter_table_multiple()
     {
-        User::addFilters([
+        User::addTableFilters([
             ['field' =>'id', 'type' => Filter::TYPE_NUMBER, 'caption' => 'ID'],
             ['field' =>'name', 'type' => Filter::TYPE_STRING, 'caption' => 'Name'],
             ['field' =>'birthday', 'type' => Filter::TYPE_DATE, 'caption' => 'Birthday'],
@@ -248,7 +248,7 @@ class FilterTableTest extends TestCase
             'is_blocked' => false,
             'status' => User::STATUS_NEW,
             'parent_id' => 1,]);
-        $users = User::filter($filters)->get();
+        $users = User::tableFilter($filters)->get();
         $this->assertCount(1, $users);
     }
 
