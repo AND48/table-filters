@@ -42,8 +42,9 @@ class Filter extends Model
         }
 
         $model = app($this->source_model);
-        $source_field = $model::getTableFilterSourceField();
-        $order_by = $model::getTableFilterSourceOrderBy();
+        $table_name = $model->getTable();
+        $source_field = $table_name.'.'.$model::getTableFilterSourceField();
+        $order_by = $table_name.'.'.$model::getTableFilterSourceOrderBy();
         $load = $model::getTableFilterSourceLoad();
         $per_page = config('filters.source_data_per_page');
 
