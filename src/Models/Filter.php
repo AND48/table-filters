@@ -86,6 +86,9 @@ class Filter extends Model
         if (!isset($formats[$this->type])){
             return $values;
         }
+        if (!is_array($values)){
+            return call_user_func($formats[$this->type], $values);
+        }
         return array_map($formats[$this->type], $values);
     }
 }

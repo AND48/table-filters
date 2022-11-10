@@ -167,9 +167,9 @@ trait TableFilterable
                 throw new TableFiltersException('Class "'.$filter->source_model.'" not exists.', 301);
             }
 
-            if (!is_array($params['values'])){
-                continue;
-            }
+//            if (!is_array($params['values'])){
+//                continue;
+//            }
 
             if (empty($params['values'])){
                 if ($params['operator'] === '!='){
@@ -180,22 +180,27 @@ trait TableFilterable
                 continue;
             }
 
-            if ($this->type === Filter::TYPE_BOOLEAN){
+            if (is_array($params['values']) && (
+                    $filter->type === Filter::TYPE_BOOLEAN
+                    || count($params['values']) == 1
+                    || array_search($params['operator'], ['<','<=','>','>=']) !== false
+                )){
                 $params['values'] = Arr::first($params['values']);
             }
 
             $params['values'] = $filter->formatValues($params['values']);
+
             switch ($params['operator'] ?? '=') {
                 case '=':
-                    if (count($params['values']) == 1){
-                        $query->where($filter->field, Arr::first($params['values']));
+                    if (!is_array($params['values'])){
+                        $query->where($filter->field, $params['values']);
                     } else {
                         $query->whereIn($filter->field, $params['values']);
                     }
                     break;
                 case '!=':
-                    if (count($params['values']) == 1){
-                        $query->where($filter->field, '!=', Arr::first($params['values']));
+                    if (!is_array($params['values'])){
+                        $query->where($filter->field, '!=', $params['values']);
                     } else {
                         $query->whereNotIn($filter->field, $params['values']);
                     }
@@ -204,7 +209,7 @@ trait TableFilterable
                 case '<=':
                 case '>':
                 case '>=':
-                    $query->where($filter->field, $params['operator'], Arr::first($params['values']));
+                    $query->where($filter->field, $params['operator'], $params['values']);
                     break;
                 case '~':
                     $query->where(function ($query) use ($filter, $params){

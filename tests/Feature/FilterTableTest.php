@@ -67,8 +67,8 @@ class FilterTableTest extends TestCase
         $tests = [
             ['operator' => '=', 'values' => [3,48], 'assert_count' => 2],
             ['operator' => '!=', 'values' => [3,48], 'assert_count' => 98],
-            ['operator' => '<', 'values' => [48], 'assert_count' => 47],
-            ['operator' => '<=', 'values' => [48], 'assert_count' => 48],
+            ['operator' => '<', 'values' => 48, 'assert_count' => 47],
+            ['operator' => '<=', 'values' => 48, 'assert_count' => 48],
             ['operator' => '>', 'values' => [48], 'assert_count' => 52],
             ['operator' => '>=', 'values' => [48], 'assert_count' => 53],
         ];
@@ -119,7 +119,7 @@ class FilterTableTest extends TestCase
         User::factory()->count(3)->create(['is_blocked' => true]);
 
         $tests = [
-            ['operator' => '=', 'values' => [true], 'assert_count' => 3],
+            ['operator' => '=', 'values' => true, 'assert_count' => 3],
             ['operator' => '=', 'values' => [false], 'assert_count' => 97],
             ['operator' => '!=', 'values' => [true], 'assert_count' => 97],
             ['operator' => '!=', 'values' => [false], 'assert_count' => 3],
