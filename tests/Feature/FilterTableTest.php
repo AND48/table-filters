@@ -97,6 +97,7 @@ class FilterTableTest extends TestCase
             ['operator' => '=', 'values' => ['Andrii', 'Andy'], 'assert_count' => 2],
             ['operator' => '!=', 'values' => ['Andrii', 'Andy'], 'assert_count' => 3],
             ['operator' => '~', 'values' => ['ndy', 'ke'], 'assert_count' => 3],
+            ['operator' => '~', 'values' => ['ndy'], 'assert_count' => 2],
         ];
 
         foreach ($tests as $test) {

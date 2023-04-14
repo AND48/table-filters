@@ -65,7 +65,7 @@ $filters = User::tableFilterList(true, [
 Get source data.
 ```php
 $filter = Filter::find($filter_id);
-$sorce_data = $filter->sourceData($page, $search_query);
+$source_data = $filter->sourceData($page, $search_query);
 ```
 
 Load source data by route.

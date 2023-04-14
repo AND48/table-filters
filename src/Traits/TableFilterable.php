@@ -212,11 +212,15 @@ trait TableFilterable
                     $query->where($filter->field, $params['operator'], $params['values']);
                     break;
                 case '~':
-                    $query->where(function ($query) use ($filter, $params){
-                        foreach ($params['values'] as $value){
-                            $query->orWhere($filter->field, 'LIKE', "%$value%");
-                        }
-                    });
+                    if (!is_array($params['values'])){
+                        $query->where($filter->field, 'LIKE', "%".$params['values']."%");
+                    } else {
+                        $query->where(function ($query) use ($filter, $params) {
+                            foreach ($params['values'] as $value) {
+                                $query->orWhere($filter->field, 'LIKE', "%$value%");
+                            }
+                        });
+                    }
                     break;
             }
 
