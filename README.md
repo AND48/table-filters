@@ -54,7 +54,7 @@ User::addTableFilters([
 ...
 }
 ```
-Use **Filterable** trait inside your *Eloquent* model(s).
+Use **TableFilterable** trait inside your *Eloquent* model(s).
 
 Get your filters.
 ```php
