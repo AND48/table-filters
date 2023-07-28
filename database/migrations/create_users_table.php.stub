@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->nullable();
+            $table->string('password')->nullable();
             $table->dateTime('birthday')->nullable();
             $table->boolean('is_blocked')->default(false);
             $table->decimal('balance')->default(0);
