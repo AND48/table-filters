@@ -86,5 +86,7 @@ $filters = [
 $users = User::tableFilter($filters)->get();
 ```
 
+For save, update or delete filters to storage (db table), please use resource route **filters.storages**.
+
 Use it with client library
 [`table-filters-client`](https://www.npmjs.com/package/table-filters-client)

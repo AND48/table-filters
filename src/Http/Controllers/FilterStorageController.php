@@ -69,7 +69,7 @@ class FilterStorageController extends Controller
             ->where('causer_id', $user->id)
             ->findOrFail($id);
         $filter->delete();
-        return response();
+        return $this->response($filter);
     }
 
     protected function response($filter){
