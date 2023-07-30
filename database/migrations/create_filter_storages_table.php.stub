@@ -17,6 +17,7 @@ class CreateFilterStoragesTable extends Migration
         Schema::create('filter_storages', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('model');
             $table->json('filters');
             $table->string('causer_type')->nullable();
             $table->unsignedBigInteger('causer_id')->nullable();

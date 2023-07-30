@@ -5,6 +5,7 @@ namespace AND48\TableFilters\Tests\Unit;
 use AND48\TableFilters\Models\Filter;
 use AND48\TableFilters\Models\FilterStorage;
 use AND48\TableFilters\Tests\TestCase;
+use AND48\TableFilters\Tests\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class FilterStorageTest extends TestCase
@@ -16,6 +17,7 @@ class FilterStorageTest extends TestCase
     {
         $filter = FilterStorage::create([
             'name' => 'testing',
+            'model' => User::class,
             'filters' => [
                 ['id' => 1, 'operator' => '!=', 'values' => [2, 3]],
                 ['id' => 2, 'operator' => '~', 'values' => ['and', 'dy']],

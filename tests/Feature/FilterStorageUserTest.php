@@ -29,8 +29,15 @@ class FilterStorageUserTest extends TestCase
         $this->assertCredentials(['email' => 'admin1@localhost.com', 'password' => 'pass1']);
         $this->assertCredentials(['email' => 'admin2@localhost.com', 'password' => 'pass2']);
 
+        User::addTableFilters([
+            ['field' =>'id', 'type' => Filter::TYPE_NUMBER, 'caption' => 'ID'],
+            ['field' =>'name', 'type' => Filter::TYPE_STRING, 'caption' => 'Name'],
+        ]);
+
         $public_id = FilterStorage::create([
             'name' => 'public_filter',
+            'model' => User::class,
+            'causer_type' => \Illuminate\Foundation\Auth\User::class,
             'filters' => [
                 ['id' => 1, 'operator' => '!=', 'values' => [2, 3]],
                 ['id' => 2, 'operator' => '~', 'values' => ['and', 'dy']],
@@ -83,18 +90,14 @@ class FilterStorageUserTest extends TestCase
             ]]))->getContent())->data;
         $this->assertEquals('private_filter_one', $response['name']);
 
-        $response = (array)json_decode($this->get(route('filters.storages.index'))->getContent())->data;
+        $response = (array)json_decode($this->get(route('filters.storages.index').'?filter_id=1')->getContent())->data;
         $this->assertCount(3, $response);
 
         $this->delete(route('filters.storages.destroy', $private_id_1));
-        $response = (array)json_decode($this->get(route('filters.storages.index'))->getContent())->data;
+        $response = (array)json_decode($this->get(route('filters.storages.index').'?filter_id=1')->getContent())->data;
         $this->assertCount(2, $response);
 
         User::factory()->count(100)->create();
-        User::addTableFilters([
-            ['field' =>'id', 'type' => Filter::TYPE_NUMBER, 'caption' => 'ID'],
-            ['field' =>'name', 'type' => Filter::TYPE_STRING, 'caption' => 'Name'],
-        ]);
 
         $users = User::tableFilter($response[1]->filters)->get();
         $this->assertCount(49, $users);

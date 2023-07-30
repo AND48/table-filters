@@ -15,6 +15,7 @@ class FilterStorage extends Model
         'causer_type',
         'causer_id',
         'name',
+        'model',
         'filters'
     ];
 
