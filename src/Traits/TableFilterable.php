@@ -4,6 +4,7 @@ namespace AND48\TableFilters\Traits;
 
 use AND48\TableFilters\Exceptions\TableFiltersException;
 use AND48\TableFilters\Models\Filter;
+use AND48\TableFilters\Models\FilterStorage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -227,5 +228,13 @@ trait TableFilterable
         }
 
         return $query;
+    }
+
+    public static function tableFilterStorageList($user){
+        return FilterStorage::where('causer_type', $user->getMorphClass())
+            ->where('model', self::getTableFilterModel())
+            ->where(function($query) use ($user){
+                $query->whereNull('causer_id')->orWhere('causer_id', $user->id);
+            })->get();
     }
 }
