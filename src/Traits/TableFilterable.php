@@ -230,11 +230,18 @@ trait TableFilterable
         return $query;
     }
 
+    protected static function getTableFilterStorageResponseFields(){
+        return ['id','name','filters'];
+    }
+
     public static function tableFilterStorageList($user){
-        return FilterStorage::where('causer_type', $user->getMorphClass())
+        $storages = FilterStorage::
+            select(self::getTableFilterStorageResponseFields())
+            ->where('causer_type', $user->getMorphClass())
             ->where('model', self::getTableFilterModel())
             ->where(function($query) use ($user){
                 $query->whereNull('causer_id')->orWhere('causer_id', $user->id);
             })->get();
+        return $storages;
     }
 }
