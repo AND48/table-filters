@@ -231,7 +231,7 @@ trait TableFilterable
     }
 
     protected static function getTableFilterStorageResponseFields(){
-        return ['id','name','filters'];
+        return ['id','name','rules'];
     }
 
     public static function tableFilterStorageList($user){
