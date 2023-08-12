@@ -18,7 +18,7 @@ class FilterStorageTest extends TestCase
         $filter = FilterStorage::create([
             'name' => 'testing',
             'model' => User::class,
-            'filters' => [
+            'rules' => [
                 ['id' => 1, 'operator' => '!=', 'values' => [2, 3]],
                 ['id' => 2, 'operator' => '~', 'values' => ['and', 'dy']],
             ],

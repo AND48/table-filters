@@ -18,7 +18,7 @@ class CreateFilterStoragesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('model');
-            $table->json('filters');
+            $table->json('rules');
             $table->string('causer_type')->nullable();
             $table->unsignedBigInteger('causer_id')->nullable();
             $table->timestamps();

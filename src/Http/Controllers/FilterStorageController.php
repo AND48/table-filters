@@ -48,8 +48,8 @@ class FilterStorageController extends Controller
     public function store()
     {
         $this->makeValidation();
-        $request_filters = request()->input('filters');
-        $filter = Filter::find(Arr::first($request_filters)['id'] ?? null);
+        $request_filters = request()->input('rules');
+        $filter = Filter::find(Arr::first($request_filters['filters'] ?? [])['id'] ?? null);
         if (!$filter){
             abort(403);
         }
@@ -57,7 +57,7 @@ class FilterStorageController extends Controller
         $storage = FilterStorage::create([
                 'name' => request()->input('name'),
                 'model' => $filter->model,
-                'filters' => request()->input('filters'),
+                'rules' => request()->input('rules'),
                 'causer_type' => $user->getMorphClass(),
                 'causer_id' => $user->id
             ]);
@@ -74,7 +74,7 @@ class FilterStorageController extends Controller
             ->findOrFail($id);
         $storage->update([
                 'name' => request()->input('name'),
-                'filters' => request()->input('filters'),
+                'rules' => request()->input('rules'),
         ]);
         return $this->response($storage);
     }
@@ -113,11 +113,12 @@ class FilterStorageController extends Controller
     protected function makeValidation(){
         request()->validate([
             'name' => 'required|max:256',
-            'filters' => 'required|array',
-            'filters.*' => 'required|array',
-            'filters.*.id' => 'required|integer|min:1',
-            'filters.*.operator' => 'required|max:2',
-            'filters.*.values' => 'required',
+            'rules' => 'required|array',
+            'rules.filters' => 'required|array',
+            'rules.filters.*' => 'required|array',
+            'rules.filters.*.id' => 'required|integer|min:1',
+            'rules.filters.*.operator' => 'required|max:2',
+            'rules.filters.*.values' => 'required',
         ]);
     }
 }

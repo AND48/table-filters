@@ -17,7 +17,7 @@ class FilterStorageResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'filters' => $this->filters,
+            'rules' => $this->rules,
         ];
     }
 }

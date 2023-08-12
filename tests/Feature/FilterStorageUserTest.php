@@ -38,36 +38,43 @@ class FilterStorageUserTest extends TestCase
             'name' => 'public_filter',
             'model' => User::class,
             'causer_type' => \Illuminate\Foundation\Auth\User::class,
-            'filters' => [
-                ['id' => 1, 'operator' => '!=', 'values' => [2, 3]],
-                ['id' => 2, 'operator' => '~', 'values' => ['and', 'dy']],
-            ],
-        ])->id;
+            'rules' => [
+                'filters' => [
+                    ['id' => 1, 'operator' => '!=', 'values' => [2, 3]],
+                    ['id' => 2, 'operator' => '~', 'values' => ['and', 'dy']],
+                ],
+            ]])->id;
 
         Auth::attempt(['email' => 'admin1@localhost.com', 'password' => 'pass1']);
         $response = (array)json_decode($this->post(route('filters.storages.store', [
             'name' => 'private_filter_1',
-            'filters' => [
-                ['id' => 1, 'operator' => '>', 'values' => [50]],
-                ['id' => 2, 'operator' => '~', 'values' => ['and', 'dy']],
+            'rules' => [
+                'filters' => [
+                    ['id' => 1, 'operator' => '>', 'values' => [50]],
+                    ['id' => 2, 'operator' => '~', 'values' => ['and', 'dy']],
+                ]
             ]]))->getContent())->data;
         $this->assertArrayHasKey('id', $response);
         $this->assertArrayHasKey('name', $response);
-        $this->assertArrayHasKey('filters', $response);
+        $this->assertArrayHasKey('rules', $response);
         $private_id_1 = $response['id'];
 
         $this->post(route('filters.storages.store', [
             'name' => 'private_filter_2',
-            'filters' => [
-                ['id' => 1, 'operator' => '<', 'values' => [50]],
+            'rules' => [
+                'filters' => [
+                    ['id' => 1, 'operator' => '<', 'values' => [50]],
+                ]
             ]]));
 
         Auth::attempt(['email' => 'admin2@localhost.com', 'password' => 'pass2']);
         $response = (array)json_decode($this->post(route('filters.storages.store', [
             'name' => 'private_filter_2',
-            'filters' => [
-                ['id' => 1, 'operator' => '=', 'values' => [1,2,3,4,5,6,7,8,9,10]],
-                ['id' => 2, 'operator' => '~', 'values' => ['or', 'not']],
+            'rules' => [
+                'filters' => [
+                    ['id' => 1, 'operator' => '=', 'values' => [1,2,3,4,5,6,7,8,9,10]],
+                    ['id' => 2, 'operator' => '~', 'values' => ['or', 'not']],
+                ]
             ]]))->getContent())->data;
         $private_id_2 = $response['id'];
 
@@ -84,9 +91,11 @@ class FilterStorageUserTest extends TestCase
 
         $response = (array)json_decode($this->put(route('filters.storages.update', [$private_id_1,
             'name' => 'private_filter_one',
-            'filters' => [
-                ['id' => 1, 'operator' => '>', 'values' => [50]],
-                ['id' => 2, 'operator' => '~', 'values' => ['and', 'dy']],
+            'rules' => [
+                'filters' => [
+                    ['id' => 1, 'operator' => '>', 'values' => [50]],
+                    ['id' => 2, 'operator' => '~', 'values' => ['and', 'dy']],
+                ]
             ]]))->getContent())->data;
         $this->assertEquals('private_filter_one', $response['name']);
 
@@ -99,7 +108,7 @@ class FilterStorageUserTest extends TestCase
 
         User::factory()->count(100)->create();
 
-        $users = User::tableFilter($response[1]->filters)->get();
+        $users = User::tableFilter($response[1]->rules->filters)->get();
         $this->assertCount(49, $users);
     }
 
