@@ -70,7 +70,9 @@ trait TableFilterable
      * @return string
      */
     public static function getTableFilterSourceField() :string{
-        return 'name';
+        $class = self::getTableFilterModel();
+        $model =  new $class;
+        return $model->getTable().'.name';
     }
 
     /**

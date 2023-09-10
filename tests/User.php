@@ -42,6 +42,7 @@ class User extends Model
     }
 
     public static function getTableFilterSourceField() :string{
-        return 'email';
+//        return 'email';
+        return '(users.email || " " || users.name)';
     }
 }

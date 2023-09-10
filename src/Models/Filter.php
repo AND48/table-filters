@@ -6,6 +6,7 @@ use AND48\TableFilters\Exceptions\TableFiltersException;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Filter extends Model
 {
@@ -43,18 +44,18 @@ class Filter extends Model
 
         $model = app($this->source_model);
         $table_name = $model->getTable();
-        $source_field = $table_name.'.'.$model::getTableFilterSourceField();
+        $source_field = DB::raw($model::getTableFilterSourceField());
         $order_by = $table_name.'.'.$model::getTableFilterSourceOrderBy();
         $load = $model::getTableFilterSourceLoad();
         $per_page = config('filters.source_data_per_page');
 
-        $query = $model->select();
+        $query = $model->select($model::getTableFilterSourceKeyName(), DB::raw($model::getTableFilterSourceField().' AS name'));
 
         if ($search_query) {
-            $query = $query->where($source_field, 'LIKE', "%$search_query%");
+            $query->where($source_field, 'LIKE', "%$search_query%");
         }
         if (!empty($load)) {
-            $query = $query->with($load);
+            $query->with($load);
         }
 
         $offset = ($page - 1) * $per_page;

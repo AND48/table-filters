@@ -16,7 +16,7 @@ class SourceDataResource extends JsonResource
     {
         return [
             'id' => $this->{$this::getTableFilterSourceKeyName()},
-            'name' => $this->{$this::getTableFilterSourceField()},
+            'name' => $this->name,
         ];
     }
 }
