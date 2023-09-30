@@ -11,7 +11,7 @@ class User extends Model
 {
     use TableFilterable, HasFactory;
 
-    protected $fillable = ['parent_id'];
+    protected $fillable = ['parent_id', 'role'];
 
     protected $dates = ['birthday'];
 
@@ -20,6 +20,10 @@ class User extends Model
     const STATUS_ACTIVE = 'active';
     const STATUS_SUSPENDED = 'suspended';
     const STATUSES = [self::STATUS_NEW, self::STATUS_VERIFIED, self::STATUS_ACTIVE, self::STATUS_SUSPENDED];
+
+    const ROLE_MANAGER = 'manager';
+    const ROLE_ADMIN = 'admin';
+    const ROLES = [self::ROLE_ADMIN, self::ROLE_MANAGER];
 
     protected static function newFactory(){
         return UserFactory::new();
@@ -39,6 +43,10 @@ class User extends Model
 
     public function scopeTableFilterSource($query){
         return $query->where('is_blocked', false);
+    }
+
+    public function scopeManager($query){
+        return $query->where('role', self::ROLE_MANAGER);
     }
 
     public static function getTableFilterSourceField() :string{

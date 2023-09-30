@@ -17,7 +17,8 @@ class Filter extends Model
         'field',
         'type',
         'caption',
-        'source_model'
+        'source_model',
+        'scope',
     ];
 
     const TYPE_NUMBER = 'number';
@@ -56,6 +57,10 @@ class Filter extends Model
         }
         if (!empty($load)) {
             $query->with($load);
+        }
+
+        if ($this->scope){
+            $query->{$this->scope}();
         }
 
         $offset = ($page - 1) * $per_page;

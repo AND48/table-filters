@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->boolean('is_blocked')->default(false);
             $table->decimal('balance')->default(0);
             $table->enum('status', \AND48\TableFilters\Tests\User::STATUSES)->default(\AND48\TableFilters\Tests\User::STATUS_NEW);
+            $table->enum('role', \AND48\TableFilters\Tests\User::ROLES)->default(\AND48\TableFilters\Tests\User::ROLE_MANAGER);
             $table->foreignId('parent_id')->nullable()->constrained();
             $table->rememberToken();
             $table->timestamps();

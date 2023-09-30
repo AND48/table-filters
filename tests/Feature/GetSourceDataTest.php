@@ -55,6 +55,28 @@ class GetSourceDataTest extends TestCase
     }
 
     /** @test */
+    function check_source_scopes()
+    {
+        User::addTableFilter([
+            'field' =>'parent_id',
+            'type' => Filter::TYPE_SOURCE,
+            'caption' => 'Parent user',
+            'source_model' => User::class,
+            'scope' => 'manager'
+        ]);
+        User::factory()->create(['role' => User::ROLE_ADMIN]);
+        User::factory()->create(['role' => User::ROLE_MANAGER]);
+        User::factory()->create(['role' => User::ROLE_MANAGER]);
+        User::factory()->create(['role' => User::ROLE_MANAGER]);
+        User::factory()->create(['role' => User::ROLE_MANAGER]);
+        User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $response = (array)json_decode($this->get(route('filters.source_data', ['filter_id' => 1]))->getContent())->data;
+
+        $this->assertCount(4, $response);
+    }
+
+    /** @test */
     function check_source_lazy_load()
     {
         $count = 5;
