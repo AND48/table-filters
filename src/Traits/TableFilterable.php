@@ -7,6 +7,7 @@ use AND48\TableFilters\Models\Filter;
 use AND48\TableFilters\Models\FilterStorage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
@@ -158,10 +159,11 @@ trait TableFilterable
 
         foreach ($request as $params){
             $filter = $filters->find($params['id']);
-            if(!Str::contains($filter->field, '.')){
+            if (method_exists($this, Str::camel($filter->field).'TableFilterable')) {
+                $filter->field = DB::raw(call_user_func([$this, Str::camel($filter->field).'TableFilterable']));
+            } elseif(!Str::contains($filter->field, '.')){
                 $filter->field = $this->getTable().'.'.$filter->field;
             }
-
 
             if (array_search($params['operator'], config('filters')['operators'][$filter->type]) === false){
                 throw new TableFiltersException('Operator "'.$params['operator'].'" not configured for type "'.$filter->type.'"', 300);

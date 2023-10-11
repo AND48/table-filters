@@ -217,6 +217,31 @@ class FilterTableTest extends TestCase
     }
 
     /** @test */
+    function check_filter_table_column_overriding()
+    {
+        User::addTableFilter([
+            'field' =>'half_balance',
+            'type' => Filter::TYPE_NUMBER,
+            'caption' => 'Half balance',
+            'source_model' => User::class
+        ]);
+
+        User::factory()->count(7)->create(['balance' => 200]);
+        User::factory()->count(3)->create(['balance' => 100]);
+
+        $tests = [
+            ['operator' => '<=', 'values' => [50], 'assert_count' => 3],
+            ['operator' => '>', 'values' => [50], 'assert_count' => 7],
+        ];
+
+        foreach ($tests as $test) {
+            $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
+            $users = User::tableFilter($filters)->get();
+            $this->assertCount($test['assert_count'], $users);
+        }
+    }
+
+    /** @test */
     function check_filter_table_multiple()
     {
         User::addTableFilters([

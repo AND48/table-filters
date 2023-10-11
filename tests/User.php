@@ -6,12 +6,13 @@ use AND48\TableFilters\Traits\TableFilterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class User extends Model
 {
     use TableFilterable, HasFactory;
 
-    protected $fillable = ['parent_id', 'role'];
+    protected $fillable = ['parent_id', 'role', 'balance'];
 
     protected $dates = ['birthday'];
 
@@ -52,5 +53,9 @@ class User extends Model
     public static function getTableFilterSourceField() :string{
 //        return 'email';
         return '(users.email || " " || users.name)';
+    }
+
+    public function halfBalanceTableFilterable(){
+        return 'CAST(users.balance/2 AS FLOAT)';
     }
 }
