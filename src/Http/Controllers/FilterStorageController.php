@@ -112,7 +112,7 @@ class FilterStorageController extends Controller
 
     protected function makeValidation(){
         request()->validate([
-            'name' => 'required|max:256',
+            'name' => 'required|max:255',
             'rules' => 'required|array',
             'rules.filters' => 'required|array',
             'rules.filters.*' => 'required|array',
