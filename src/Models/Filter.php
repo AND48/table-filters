@@ -19,6 +19,7 @@ class Filter extends Model
         'caption',
         'source_model',
         'scope',
+        'options',
     ];
 
     const TYPE_NUMBER = 'number';
@@ -29,6 +30,10 @@ class Filter extends Model
     const TYPE_SOURCE = 'source';
 
     const TYPES = [self::TYPE_NUMBER, self::TYPE_STRING, self::TYPE_BOOLEAN, self::TYPE_DATE, self::TYPE_ENUM, self::TYPE_SOURCE];
+
+    protected $casts = [
+        'options' => 'array',
+    ];
 
     protected static function newFactory()
     {

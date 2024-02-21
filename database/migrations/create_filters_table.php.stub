@@ -22,6 +22,7 @@ class CreateFiltersTable extends Migration
             $table->string('caption');
             $table->string('source_model')->nullable();
             $table->string('scope')->nullable();
+            $table->json('options')->nullable();
             $table->timestamps();
         });
     }
