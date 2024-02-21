@@ -154,7 +154,7 @@ trait TableFilterable
             }
         }, $request);
 
-        $filters = Filter::where('model', self::class)->find(Arr::pluck($request, 'id'));
+        $filters = Filter::where('model', self::getTableFilterModel())->find(Arr::pluck($request, 'id'));
         if ($filters->isEmpty()) {
             return $query;
         }
