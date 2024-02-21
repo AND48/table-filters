@@ -48,14 +48,13 @@ class Filter extends Model
             throw new TableFiltersException('Class "'.$this->source_model.'" not exists.', 201);
         }
 
-        $model = app($this->source_model);
-        $table_name = $model->getTable();
+        $model = app($this->source_model)::getTableFilterModel();
         $source_field = DB::raw($model::getTableFilterSourceField());
-        $order_by = $table_name.'.'.$model::getTableFilterSourceOrderBy();
+        $order_by = DB::raw($model::getTableFilterSourceOrderBy());
         $load = $model::getTableFilterSourceLoad();
         $per_page = config('filters.source_data_per_page');
 
-        $query = $model->select($model::getTableFilterSourceKeyName(), DB::raw($model::getTableFilterSourceField().' AS name'));
+        $query = $model::select($model::getTableFilterSourceKeyName(), DB::raw($model::getTableFilterSourceField().' AS name'));
 
         if ($search_query) {
             $query->where($source_field, 'LIKE', "%$search_query%");

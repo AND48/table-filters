@@ -93,7 +93,9 @@ trait TableFilterable
      * @return string
      */
     public static function getTableFilterSourceOrderBy():string{
-        return self::getTableFilterSourceKeyName();
+        $class = self::getTableFilterModel();
+        $model =  new $class;
+        return $model->getTable().'.'.self::getTableFilterSourceKeyName();
     }
 
     /**
