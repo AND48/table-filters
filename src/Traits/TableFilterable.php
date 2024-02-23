@@ -25,7 +25,7 @@ trait TableFilterable
     }
 
     public static function tableFilterList($load_operators = true, $enum_values = []){
-        $filters = Filter::where('model', self::getTableFilterModel())->get();
+        $filters = Filter::where('model', static::getTableFilterModel())->get();
         if ($load_operators){
             $filters->transform(function ($filter) use ($load_operators, $enum_values){
                 $filter->operators = config('filters.operators.'.$filter['type']);
@@ -33,14 +33,14 @@ trait TableFilterable
                 if ($filter['type'] === Filter::TYPE_ENUM){
                     $filter->values = $enum_values[$filter['field']] ?? [];
                 }
-                return $filter->only(self::getTableFilterResponseFields());
+                return $filter->only(static::getTableFilterResponseFields());
             });
         }
         return $filters;
     }
 
     public static function addTableFilter($filter){
-        $filter['model'] = self::getTableFilterModel();
+        $filter['model'] = static::getTableFilterModel();
         if (!isset($filter['field'])){
             $filter['field'] = 'id';
         }
@@ -71,7 +71,7 @@ trait TableFilterable
      * @return string
      */
     public static function getTableFilterSourceField() :string{
-        $class = self::getTableFilterModel();
+        $class = static::getTableFilterModel();
         $model =  new $class;
         return $model->getTable().'.name';
     }
@@ -93,9 +93,9 @@ trait TableFilterable
      * @return string
      */
     public static function getTableFilterSourceOrderBy():string{
-        $class = self::getTableFilterModel();
+        $class = static::getTableFilterModel();
         $model =  new $class;
-        return $model->getTable().'.'.self::getTableFilterSourceKeyName();
+        return $model->getTable().'.'.static::getTableFilterSourceKeyName();
     }
 
     /**
@@ -115,7 +115,7 @@ trait TableFilterable
      * @return array
      */
 //    public static function getTableFilterSourceTransform($item) :array{
-//        return $item->only([self::getTableFilterSourceKeyName(), self::getTableFilterSourceField()]);
+//        return $item->only([static::getTableFilterSourceKeyName(), static::getTableFilterSourceField()]);
 //    }
 
     /**
@@ -154,7 +154,7 @@ trait TableFilterable
             }
         }, $request);
 
-        $filters = Filter::where('model', self::getTableFilterModel())->find(Arr::pluck($request, 'id'));
+        $filters = Filter::where('model', static::getTableFilterModel())->find(Arr::pluck($request, 'id'));
         if ($filters->isEmpty()) {
             return $query;
         }
@@ -242,9 +242,9 @@ trait TableFilterable
 
     public static function tableFilterStorageList($user){
         $storages = FilterStorage::
-            select(self::getTableFilterStorageResponseFields())
+            select(static::getTableFilterStorageResponseFields())
             ->where('causer_type', $user->getMorphClass())
-            ->where('model', self::getTableFilterModel())
+            ->where('model', static::getTableFilterModel())
             ->where(function($query) use ($user){
                 $query->whereNull('causer_id')->orWhere('causer_id', $user->id);
             })->get();
