@@ -49,7 +49,6 @@ class Filter extends Model
         }
 
         $model = app($this->source_model)::getTableFilterModel();
-        $source_field = DB::raw($model::getTableFilterSourceField());
         $order_by = DB::raw($model::getTableFilterSourceOrderBy());
         $load = $model::getTableFilterSourceLoad();
         $per_page = config('filters.source_data_per_page');
@@ -57,6 +56,12 @@ class Filter extends Model
         $query = $model::select($model::getTableFilterSourceKeyName(), DB::raw($model::getTableFilterSourceField().' AS name'));
 
         if ($search_query) {
+            if (config('database.default', '') == 'pgsql'){
+                $source_field = DB::raw('LOWER('.$model::getTableFilterSourceField().')');
+                $search_query = strtolower($search_query);
+            } else {
+                $source_field = DB::raw($model::getTableFilterSourceField());
+            }
             $query->where($source_field, 'LIKE', "%$search_query%");
         }
         if (!empty($load)) {
