@@ -21,7 +21,7 @@ trait TableFilterable
     }
 
     protected static function getTableFilterResponseFields(){
-        return ['id','type','caption','operators', 'values', 'options'];
+        return config('filters.response_fields');
     }
 
     public static function tableFilterList($load_operators = true, $enum_values = []){

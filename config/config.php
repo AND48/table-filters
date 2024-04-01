@@ -44,4 +44,13 @@ return [
     |
     */
     'source_data_per_page' => 10,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Response fields
+    |--------------------------------------------------------------------------
+    | Array of fields for table filters response
+    |
+    */
+    'response_fields' => ['id','type','caption','operators', 'values', 'options'],
 ];
