@@ -167,7 +167,10 @@ trait TableFilterable
             } elseif(!Str::contains($filter->field, '.')){
                 $filter->field = $this->getTable().'.'.$filter->field;
             }elseif(Str::contains($filter->field, '.')) {
-                $this->joinByRelation($query, explode('.', $filter->field)[0], 'leftJoin');
+                $filter_table = explode('.', $filter->field)[0];
+                if ($filter_table != $this->getTable()) {
+                    $this->joinByRelation($query, $filter_table, 'leftJoin');
+                }
             }
 
             if (array_search($params['operator'], config('filters')['operators'][$filter->type]) === false){
