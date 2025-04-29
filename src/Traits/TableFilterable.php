@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Trait TableFilterable
@@ -165,6 +166,8 @@ trait TableFilterable
                 $filter->field = DB::raw(call_user_func([$this, Str::camel($filter->field).'TableFilterable']));
             } elseif(!Str::contains($filter->field, '.')){
                 $filter->field = $this->getTable().'.'.$filter->field;
+            }elseif(Str::contains($filter->field, '.')) {
+                $this->joinByRelation($query, explode('.', $filter->field)[0], 'leftJoin');
             }
 
             if (array_search($params['operator'], config('filters')['operators'][$filter->type]) === false){
@@ -242,7 +245,7 @@ trait TableFilterable
 
     public static function tableFilterStorageList($user){
         $storages = FilterStorage::
-            select(static::getTableFilterStorageResponseFields())
+        select(static::getTableFilterStorageResponseFields())
             ->where('causer_type', $user->getMorphClass())
             ->where('model', static::getTableFilterModel())
             ->where(function($query) use ($user){
@@ -250,4 +253,34 @@ trait TableFilterable
             })->get();
         return $storages;
     }
+
+    private function joinByRelation(Builder $query, string $relationName, string $joinType = ''): Builder
+    {
+        $model = $query->getModel();
+
+        /** @var Relation $relation */
+        $relation = $model->{$relationName}();
+
+        $related = $relation->getRelated();
+        $relatedTable = $related->getTable();
+
+        switch (true) {
+            case $relation instanceof \Illuminate\Database\Eloquent\Relations\BelongsTo:
+                $foreignKey = $relation->getQualifiedForeignKeyName();
+                $ownerKey = $relation->getOwnerKeyName();
+                break;
+
+            case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasOne:
+            case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasMany:
+                $foreignKey = $relation->getQualifiedForeignKeyName();
+                $ownerKey = $relation->getParentKeyName();
+                break;
+
+            default:
+                throw new InvalidArgumentException("Relation type not supported for joinByRelation.");
+        }
+
+        return $query->{$joinType}(DB::raw($relatedTable.' AS '.$relationName), $foreignKey, '=', $relationName.'.'.$ownerKey);
+    }
+
 }
