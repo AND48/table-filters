@@ -34,6 +34,10 @@ class User extends Model
         return $this->belongsTo(self::class);
     }
 
+    public function children(){
+        return $this->hasMany(self::class,'id','parent_id');
+    }
+
     public function getParentUserNameAttribute(){
         return $item->parent->name ?? '';
     }
@@ -57,5 +61,9 @@ class User extends Model
 
     public function halfBalanceTableFilterable(){
         return 'CAST(users.balance/2 AS FLOAT)';
+    }
+
+    public function orders(){
+        return $this->hasMany(Order::class);
     }
 }

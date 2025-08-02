@@ -4,6 +4,7 @@ namespace AND48\TableFilters\Tests\Feature;
 
 use AND48\TableFilters\Exceptions\TableFiltersException;
 use AND48\TableFilters\Models\Filter;
+use AND48\TableFilters\Tests\Order;
 use AND48\TableFilters\Tests\TestCase;
 use AND48\TableFilters\Tests\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -211,6 +212,83 @@ class FilterTableTest extends TestCase
 
         foreach ($tests as $test) {
             $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
+            $users = User::tableFilter($filters)->get();
+            $this->assertCount($test['assert_count'], $users);
+        }
+    }
+
+    /** @test */
+    function check_filter_table_relation()
+    {
+        Order::addTableFilter([
+            'field' =>'user.status',
+            'type' => Filter::TYPE_ENUM,
+            'caption' => 'User Status',
+        ]);
+
+
+        User::factory()->hasOrders(2)->create(['status' => User::STATUS_ACTIVE]);
+        User::factory()->hasOrders(3)->create(['status' => User::STATUS_SUSPENDED]);
+
+
+        $tests = [
+            ['operator' => '=', 'values' => [User::STATUS_ACTIVE], 'assert_count' => 2],
+            ['operator' => '=', 'values' => [User::STATUS_SUSPENDED], 'assert_count' => 3],
+        ];
+
+        foreach ($tests as $test) {
+            $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
+            $users = Order::tableFilter($filters)->get();
+            $this->assertCount($test['assert_count'], $users);
+        }
+    }
+
+    /** @test */
+    function check_filter_table_relation_many()
+    {
+        User::addTableFilter([
+            'field' =>'orders.id',
+            'type' => Filter::TYPE_SOURCE,
+            'caption' => 'Order',
+            'source_model' => Order::class
+        ]);
+        User::addTableFilter([
+            'field' =>'orders.name',
+            'type' => Filter::TYPE_STRING,
+            'caption' => 'Order',
+            'source_model' => Order::class
+        ]);
+
+        User::factory()->create(['name' => 'And']);
+        User::factory()->create(['name' => 'Str']);
+        Order::factory()->create(['name' => 'I111111', 'user_id' => 1]);
+        Order::factory()->create(['name' => 'I222222', 'user_id' => 1]);
+        Order::factory()->create(['name' => 'I333333', 'user_id' => 2]);
+
+        $tests = [
+            ['operator' => '=', 'values' => [1,3], 'assert_count' => 2],
+            ['operator' => '=', 'values' => [1,2], 'assert_count' => 1],
+            ['operator' => '=', 'values' => [3,5], 'assert_count' => 1],
+            ['operator' => '=', 'values' => [5], 'assert_count' => 0],
+            ['operator' => '!=', 'values' => [1,2], 'assert_count' => 1],
+            ['operator' => '!=', 'values' => [1,2,3], 'assert_count' => 0],
+            ['operator' => '!=', 'values' => [5], 'assert_count' => 2],
+        ];
+
+        foreach ($tests as $test) {
+            $filters = [['id' => 1, 'operator' => $test['operator'], 'values' => $test['values']]];
+            $users = User::tableFilter($filters)->get();
+            $this->assertCount($test['assert_count'], $users);
+        }
+
+
+        $tests = [
+            ['operator' => '~', 'values' => ['I'], 'assert_count' => 2],
+            ['operator' => '~', 'values' => ['222'], 'assert_count' => 1],
+        ];
+
+        foreach ($tests as $test) {
+            $filters = [['id' => 2, 'operator' => $test['operator'], 'values' => $test['values']]];
             $users = User::tableFilter($filters)->get();
             $this->assertCount($test['assert_count'], $users);
         }

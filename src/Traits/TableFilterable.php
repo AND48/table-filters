@@ -131,11 +131,125 @@ trait TableFilterable
     }
 
     /**
+     * @throws TableFiltersException
+     */
+    public function makeTableFilter($query, $filter, $params){
+        if (method_exists($this, Str::camel($filter->field).'TableFilterable')) {
+            $filter->field = DB::raw(call_user_func([$this, Str::camel($filter->field).'TableFilterable']));
+        } elseif(!Str::contains($filter->field, '.')){
+            $filter->field = $this->getTable().'.'.$filter->field;
+        }elseif(Str::contains($filter->field, '.')) {
+            $relationName = explode('.', $filter->field)[0];
+            if ($relationName == $this->getTable()) {
+                return $query;
+            }
+
+            $model = $query->getModel();
+            /** @var Relation $relation */
+            $relation = $model->{$relationName}();
+
+            $related = $relation->getRelated();
+            $relatedTable = $related->getTable();
+
+            switch (true) {
+                case $relation instanceof \Illuminate\Database\Eloquent\Relations\BelongsTo:
+                    $foreignKey = $relation->getQualifiedForeignKeyName();
+                    $ownerKey = $relation->getOwnerKeyName();
+                    $query->leftJoin(DB::raw($relatedTable.' AS '.$relationName), $foreignKey, '=', $relationName.'.'.$ownerKey);
+                    break;
+                case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasOne:
+                case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasMany:
+                    $query->whereHas($relationName, function ($query)  use ($params, $filter){
+                        $sub_filter = $filter->replicate();
+                        $sub_filter->field = Str::after($filter->field, '.');
+                        $source_model = new  $filter->source_model;
+//                        dd($sub_filter);
+                        $source_model->makeTableFilter($query, $sub_filter, $params);
+                    });
+                    dump($query->toSql());
+                    dump($query->getBindings());
+                    return $query;
+
+                default:
+                    throw new InvalidArgumentException("Relation type not supported for joinByRelation.");
+            }
+        }
+
+        if (!in_array($params['operator'], config('filters')['operators'][$filter->type])){
+            throw new TableFiltersException('Operator "'.$params['operator'].'" not configured for type "'.$filter->type.'"', 300);
+        }
+        if ($filter->type === Filter::TYPE_SOURCE && (!$filter->source_model || !class_exists($filter->source_model))){
+            throw new TableFiltersException('Class "'.$filter->source_model.'" not exists.', 301);
+        }
+
+//            if (!is_array($params['values'])){
+//                continue;
+//            }
+
+        if (empty($params['values'])){
+            if ($params['operator'] === '!='){
+                $query->whereNotNull($filter->field);
+            } else {
+                $query->whereNull($filter->field);
+            }
+            return $query;
+        }
+
+        if (is_array($params['values']) && (
+                $filter->type === Filter::TYPE_BOOLEAN
+                || count($params['values']) == 1
+                || in_array($params['operator'], ['<', '<=', '>', '>='])
+            )){
+            $params['values'] = Arr::first($params['values']);
+        }
+
+        $params['values'] = $filter->formatValues($params['values']);
+
+        switch ($params['operator'] ?? '=') {
+            case '=':
+                if (!is_array($params['values'])){
+                    $query->where($filter->field, $params['values']);
+                } else {
+                    $query->whereIn($filter->field, $params['values']);
+                }
+                break;
+            case '!=':
+                if (!is_array($params['values'])){
+                    $query->where($filter->field, '!=', $params['values']);
+                } else {
+                    $query->whereNotIn($filter->field, $params['values']);
+                }
+                break;
+            case '<':
+            case '<=':
+            case '>':
+            case '>=':
+                $query->where($filter->field, $params['operator'], $params['values']);
+                break;
+            case '~':
+                if (!is_array($params['values'])){
+                    $query->where($filter->field, 'LIKE', "%".$params['values']."%");
+                } else {
+                    $query->where(function ($query) use ($filter, $params) {
+                        foreach ($params['values'] as $value) {
+                            $query->orWhere($filter->field, 'LIKE', "%$value%");
+                        }
+                    });
+                }
+                break;
+        }
+        dump($query->toSql());
+        dump($query->getBindings());
+        return $query;
+    }
+
+    /**
      *
      * filter scope
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
+     * @throws TableFiltersException
      */
     public function scopeTableFilter($query, array $request = []) :Builder{
         $request = array_map(function($params){
@@ -162,81 +276,7 @@ trait TableFilterable
 
         foreach ($request as $params){
             $filter = $filters->find($params['id']);
-            if (method_exists($this, Str::camel($filter->field).'TableFilterable')) {
-                $filter->field = DB::raw(call_user_func([$this, Str::camel($filter->field).'TableFilterable']));
-            } elseif(!Str::contains($filter->field, '.')){
-                $filter->field = $this->getTable().'.'.$filter->field;
-            }elseif(Str::contains($filter->field, '.')) {
-                $filter_table = explode('.', $filter->field)[0];
-                if ($filter_table != $this->getTable()) {
-                    $this->joinByRelation($query, $filter_table, 'leftJoin');
-                }
-            }
-
-            if (array_search($params['operator'], config('filters')['operators'][$filter->type]) === false){
-                throw new TableFiltersException('Operator "'.$params['operator'].'" not configured for type "'.$filter->type.'"', 300);
-            }
-            if ($filter->type === Filter::TYPE_SOURCE && (!$filter->source_model || !class_exists($filter->source_model))){
-                throw new TableFiltersException('Class "'.$filter->source_model.'" not exists.', 301);
-            }
-
-//            if (!is_array($params['values'])){
-//                continue;
-//            }
-
-            if (empty($params['values'])){
-                if ($params['operator'] === '!='){
-                    $query->whereNotNull($filter->field);
-                } else {
-                    $query->whereNull($filter->field);
-                }
-                continue;
-            }
-
-            if (is_array($params['values']) && (
-                    $filter->type === Filter::TYPE_BOOLEAN
-                    || count($params['values']) == 1
-                    || array_search($params['operator'], ['<','<=','>','>=']) !== false
-                )){
-                $params['values'] = Arr::first($params['values']);
-            }
-
-            $params['values'] = $filter->formatValues($params['values']);
-
-            switch ($params['operator'] ?? '=') {
-                case '=':
-                    if (!is_array($params['values'])){
-                        $query->where($filter->field, $params['values']);
-                    } else {
-                        $query->whereIn($filter->field, $params['values']);
-                    }
-                    break;
-                case '!=':
-                    if (!is_array($params['values'])){
-                        $query->where($filter->field, '!=', $params['values']);
-                    } else {
-                        $query->whereNotIn($filter->field, $params['values']);
-                    }
-                    break;
-                case '<':
-                case '<=':
-                case '>':
-                case '>=':
-                    $query->where($filter->field, $params['operator'], $params['values']);
-                    break;
-                case '~':
-                    if (!is_array($params['values'])){
-                        $query->where($filter->field, 'LIKE', "%".$params['values']."%");
-                    } else {
-                        $query->where(function ($query) use ($filter, $params) {
-                            foreach ($params['values'] as $value) {
-                                $query->orWhere($filter->field, 'LIKE', "%$value%");
-                            }
-                        });
-                    }
-                    break;
-            }
-
+            $query = $this->makeTableFilter($query, $filter, $params);
         }
 
         return $query;
@@ -255,35 +295,6 @@ trait TableFilterable
                 $query->whereNull('causer_id')->orWhere('causer_id', $user->id);
             })->get();
         return $storages;
-    }
-
-    private function joinByRelation(Builder $query, string $relationName, string $joinType = ''): Builder
-    {
-        $model = $query->getModel();
-
-        /** @var Relation $relation */
-        $relation = $model->{$relationName}();
-
-        $related = $relation->getRelated();
-        $relatedTable = $related->getTable();
-
-        switch (true) {
-            case $relation instanceof \Illuminate\Database\Eloquent\Relations\BelongsTo:
-                $foreignKey = $relation->getQualifiedForeignKeyName();
-                $ownerKey = $relation->getOwnerKeyName();
-                break;
-
-            case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasOne:
-            case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasMany:
-                $foreignKey = $relation->getQualifiedForeignKeyName();
-                $ownerKey = $relation->getParentKeyName();
-                break;
-
-            default:
-                throw new InvalidArgumentException("Relation type not supported for joinByRelation.");
-        }
-
-        return $query->{$joinType}(DB::raw($relatedTable.' AS '.$relationName), $foreignKey, '=', $relationName.'.'.$ownerKey);
     }
 
 }
