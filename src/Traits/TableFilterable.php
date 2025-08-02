@@ -159,12 +159,13 @@ trait TableFilterable
                     break;
                 case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasOne:
                 case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasMany:
-                    $query->whereHas($relationName, function ($query)  use ($params, $filter){
+                    $query->whereHas($relationName, function ($query)  use ($params, $filter, $relationName){
                         $sub_filter = $filter->replicate();
                         $sub_filter->field = Str::after($filter->field, '.');
-                        $source_model = new  $filter->source_model;
+//                        $source_model = new $filter->source_model;
 //                        dd($sub_filter);
-                        $source_model->makeTableFilter($query, $sub_filter, $params);
+                        $relation = $this->{$relationName}();
+                        $relation->getRelated()->makeTableFilter($query, $sub_filter, $params);
                     });
 //                    dump($query->toSql());
 //                    dump($query->getBindings());

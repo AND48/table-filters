@@ -256,7 +256,7 @@ class FilterTableTest extends TestCase
             'field' =>'orders.name',
             'type' => Filter::TYPE_STRING,
             'caption' => 'Order',
-            'source_model' => Order::class
+//            'source_model' => Order::class
         ]);
 
         User::factory()->create(['name' => 'And']);
