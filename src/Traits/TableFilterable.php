@@ -166,8 +166,8 @@ trait TableFilterable
 //                        dd($sub_filter);
                         $source_model->makeTableFilter($query, $sub_filter, $params);
                     });
-                    dump($query->toSql());
-                    dump($query->getBindings());
+//                    dump($query->toSql());
+//                    dump($query->getBindings());
                     return $query;
 
                 default:
@@ -238,8 +238,8 @@ trait TableFilterable
                 }
                 break;
         }
-        dump($query->toSql());
-        dump($query->getBindings());
+//        dump($query->toSql());
+//        dump($query->getBindings());
         return $query;
     }
 
