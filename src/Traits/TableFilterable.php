@@ -159,6 +159,7 @@ trait TableFilterable
                     break;
                 case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasOne:
                 case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasMany:
+                case $relation instanceof \Illuminate\Database\Eloquent\Relations\MorphMany:
                     if ($params['operator'] === '!='){
                         $where = 'whereDoesntHave';
                         $params['operator'] = '=';
@@ -179,7 +180,7 @@ trait TableFilterable
                     return $query;
 
                 default:
-                    throw new InvalidArgumentException("Relation type not supported for joinByRelation.");
+                    throw new \InvalidArgumentException("Relation type not supported for joinByRelation.");
             }
         }
 
