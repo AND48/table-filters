@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Filter extends Model
 {
@@ -69,7 +70,13 @@ class Filter extends Model
         }
 
         if ($this->scope){
-            $query->{$this->scope}();
+            if (Str::contains($this->scope, '(')){
+                $scope = Str::before($this->scope, '(');
+                $params = explode(',', Str::between($this->scope, '(', ')'));
+                $query->{$scope}(...$params);
+            } else {
+                $query->{$this->scope}();
+            }
         }
 
         $offset = ($page - 1) * $per_page;
