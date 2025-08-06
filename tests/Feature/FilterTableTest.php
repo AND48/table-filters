@@ -270,6 +270,7 @@ class FilterTableTest extends TestCase
             ['operator' => '=', 'values' => [1,2], 'assert_count' => 1],
             ['operator' => '=', 'values' => [3,5], 'assert_count' => 1],
             ['operator' => '=', 'values' => [5], 'assert_count' => 0],
+            ['operator' => '!=', 'values' => [1], 'assert_count' => 1],
             ['operator' => '!=', 'values' => [1,2], 'assert_count' => 1],
             ['operator' => '!=', 'values' => [1,2,3], 'assert_count' => 0],
             ['operator' => '!=', 'values' => [5], 'assert_count' => 2],

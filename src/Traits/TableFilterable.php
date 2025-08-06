@@ -159,7 +159,14 @@ trait TableFilterable
                     break;
                 case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasOne:
                 case $relation instanceof \Illuminate\Database\Eloquent\Relations\HasMany:
-                    $query->whereHas($relationName, function ($query)  use ($params, $filter, $relationName){
+                    if ($params['operator'] === '!='){
+                        $where = 'whereDoesntHave';
+                        $params['operator'] = '=';
+                    } else {
+                        $where = 'whereHas';
+                    }
+
+                    $query->{$where}($relationName, function ($query)  use ($params, $filter, $relationName){
                         $sub_filter = $filter->replicate();
                         $sub_filter->field = Str::after($filter->field, '.');
 //                        $source_model = new $filter->source_model;
