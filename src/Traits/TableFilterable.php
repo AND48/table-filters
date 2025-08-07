@@ -37,7 +37,7 @@ trait TableFilterable
                 return $filter->only(static::getTableFilterResponseFields());
             });
         }
-        return $filters;
+        return $filters->sortBy('caption')->values();
     }
 
     public static function addTableFilter($filter){
