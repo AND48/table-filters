@@ -285,7 +285,7 @@ trait TableFilterable
 
         foreach ($request as $params){
             $filter = $filters->find($params['id']);
-            $query = $this->makeTableFilter($query, $filter, $params);
+            $query = $this->makeTableFilter($query, clone $filter, $params);
         }
 
         return $query;
