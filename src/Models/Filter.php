@@ -27,10 +27,19 @@ class Filter extends Model
     const TYPE_STRING = 'string';
     const TYPE_BOOLEAN = 'boolean';
     const TYPE_DATE = 'date';
+    const TYPE_DATETIME = 'datetime';
     const TYPE_ENUM = 'enum';
     const TYPE_SOURCE = 'source';
 
-    const TYPES = [self::TYPE_NUMBER, self::TYPE_STRING, self::TYPE_BOOLEAN, self::TYPE_DATE, self::TYPE_ENUM, self::TYPE_SOURCE];
+    const TYPES = [
+        self::TYPE_NUMBER,
+        self::TYPE_STRING,
+        self::TYPE_BOOLEAN,
+        self::TYPE_DATE,
+        self::TYPE_DATETIME,
+        self::TYPE_ENUM,
+        self::TYPE_SOURCE
+    ];
 
     protected $casts = [
         'options' => 'array',
@@ -101,6 +110,7 @@ class Filter extends Model
             self::TYPE_STRING => 'strval',
             self::TYPE_BOOLEAN => 'boolval',
             self::TYPE_DATE => 'self::dateval',
+            self::TYPE_DATETIME => 'self::dateval',
 //            self::TYPE_ENUM => 'intval',
             self::TYPE_SOURCE => 'intval',
         ];
