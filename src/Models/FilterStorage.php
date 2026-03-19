@@ -17,7 +17,8 @@ class FilterStorage extends Model
         'name',
         'model',
         'rules',
-        'default'
+        'default',
+        'identification',
     ];
 
     protected $casts = [
