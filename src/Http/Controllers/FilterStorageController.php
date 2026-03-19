@@ -58,6 +58,7 @@ class FilterStorageController extends Controller
                 'name' => request()->input('name'),
                 'model' => $filter->model,
                 'rules' => request()->input('rules'),
+                'identification' => request()->input('identification'),
                 'default' => request()->boolean('default'),
                 'causer_type' => $user->getMorphClass(),
                 'causer_id' => $user->id
