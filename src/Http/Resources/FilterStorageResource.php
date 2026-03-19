@@ -18,6 +18,7 @@ class FilterStorageResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'rules' => $this->rules,
+            'default' => $this->default,
         ];
     }
 }

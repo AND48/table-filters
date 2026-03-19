@@ -58,6 +58,7 @@ class FilterStorageController extends Controller
                 'name' => request()->input('name'),
                 'model' => $filter->model,
                 'rules' => request()->input('rules'),
+                'default' => request()->boolean('default'),
                 'causer_type' => $user->getMorphClass(),
                 'causer_id' => $user->id
             ]);
@@ -75,6 +76,7 @@ class FilterStorageController extends Controller
         $storage->update([
                 'name' => request()->input('name'),
                 'rules' => request()->input('rules'),
+                'default' => request()->boolean('default'),
         ]);
         return $this->response($storage);
     }
@@ -113,6 +115,7 @@ class FilterStorageController extends Controller
     protected function makeValidation(){
         request()->validate([
             'name' => 'required|max:255',
+            'default' => 'sometimes|boolean',
             'rules' => 'required|array',
             'rules.filters' => 'required|array',
             'rules.filters.*' => 'required|array',
@@ -122,4 +125,3 @@ class FilterStorageController extends Controller
         ]);
     }
 }
-

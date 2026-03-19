@@ -16,11 +16,13 @@ class FilterStorage extends Model
         'causer_id',
         'name',
         'model',
-        'rules'
+        'rules',
+        'default'
     ];
 
     protected $casts = [
-        'rules' => 'json'
+        'rules' => 'json',
+        'default' => 'boolean'
     ];
 
     protected static function newFactory()
