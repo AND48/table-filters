@@ -195,11 +195,19 @@ trait TableFilterable
 //                continue;
 //            }
 
-        if (empty($params['values'])){
+        if (
+            !isset($params['values'])
+            || $params['values'] === ''
+            || (is_array($params['values']) && empty($params['values']))
+        ){
             if ($params['operator'] === '!='){
-                $query->whereNotNull($filter->field);
+                $query->whereNotNull($filter->field)
+                    ->where($filter->field, '!=', '');
             } else {
-                $query->whereNull($filter->field);
+                $query->where(function ($query) use ($filter) {
+                    $query->whereNull($filter->field)
+                        ->orWhere($filter->field, '');
+                });
             }
             return $query;
         }
